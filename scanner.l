@@ -43,6 +43,23 @@ noReconocido    [^ \t\n]
 %%
 
 int main(int argc, char *argv[]) {
-    yylex();
+    // Validacion del parametro obligatorio, con !=2 porque lee nombre y ruta del archivo (./bin/tp2.exe <ruta archivo entrada>)
+    if (argc != 2) {
+        fprintf(stderr, "Error: Parámetro obligatorio faltante.\n");
+        fprintf(stderr, "Uso correcto: %s <ruta archivo entrada>\n", argv[0]);
+        return 1; 
+    }
+    
+    FILE *archivo = fopen(argv[1], "r");
+    if (!archivo) {
+        fprintf(stderr, "Error crítico: No se pudo abrir el archivo '%s'\n", argv[1]);
+        return 1;
+    }
+    
+    yyin = archivo; 
+
+    yylex(); r
+
+    fclose(yyin); 
     return 0;
 }
