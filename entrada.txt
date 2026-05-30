@@ -1,7 +1,19 @@
-12345
-0777
-0812
-$mi_variable
-0xGHIJK
-@
-9999
+typedef
+unsigned
+volatile
+union
+enum
+default
+switch
+for
+return
+sizeof
+'c'
+"hola mundo"
+"1235"
+271
+1488
+07
+12
+0xaf
+0.56
