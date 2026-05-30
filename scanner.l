@@ -48,20 +48,20 @@ noReconocido    [^ \t\n]
     tokenNoReconocidos es un automata separado que se ejecuta al identificar el primer caracter no reconocido. Este tiene sus propias declaraciones y estados.
 */
 <tokenNoReconocido>{
-    [^ \t\n]+           {
-                            if (DEBUG_MODE) fprintf(stderr, "%s", yytext); 
-                            BEGIN(INITIAL); 
-                            if (DEBUG_MODE) fprintf(stderr, "'\n");
-                        }
-    [ \t\n]             {
-                            yyless(0); 
-                            BEGIN(INITIAL); 
-                            if (DEBUG_MODE) fprintf(stderr, "'\n");
-                        } 
-    <<EOF>>             {
-                            BEGIN(INITIAL); 
-                            if (DEBUG_MODE) fprintf(stderr, "'\n");
-                        }
+    [^ \t\n]+ {
+        if (DEBUG_MODE) fprintf(stderr, "%s", yytext); 
+        BEGIN(INITIAL); 
+        if (DEBUG_MODE) fprintf(stderr, "'\n");
+    }
+    [ \t\n] {
+        yyless(0); 
+        BEGIN(INITIAL); 
+        if (DEBUG_MODE) fprintf(stderr, "'\n");
+    } 
+    <<EOF>> {
+        BEGIN(INITIAL); 
+        if (DEBUG_MODE) fprintf(stderr, "'\n");
+    }
 }
 
 %%
