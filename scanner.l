@@ -31,13 +31,10 @@ noReconocido    [^ \t\n]
 {noReconocido}          { printf("\nEncontre un token no reconocido: %s", yytext); BEGIN(tokenNoReconocido); }
 {centinela}             { }
 
-/*
-    tokenNoReconocidos es un automata separado que se ejecuta al identificar el primer caracter no reconocido. Este tiene sus propias declaraciones y estados.
-*/
 <tokenNoReconocido>{
-    [^ \t\n]+           { printf("%s", yytext); BEGIN(INITIAL); printf("\n"); }
-    [ \t\n]             {yyless(0); printf("\n"); BEGIN(INITIAL); } 
-    <<EOF>>             { printf("\n"); BEGIN(INITIAL); }
+[^ \t\n]+               { printf("%s", yytext); BEGIN(INITIAL); printf("\n"); }
+[ \t\n]                 {yyless(0); printf("\n"); BEGIN(INITIAL); } 
+<<EOF>>                 { printf("\n"); BEGIN(INITIAL); }
 }
 
 %%
