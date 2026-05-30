@@ -1,5 +1,7 @@
-int main (){
-    @double271@
-    int a = 5;
-    a++;
-}
+12345
+0777
+0812
+$mi_variable
+0xGHIJK
+@
+9999
