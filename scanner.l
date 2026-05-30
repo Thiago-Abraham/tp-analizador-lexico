@@ -1,6 +1,17 @@
 %{
 
 #include <stdio.h>
+#include <stdbool.h>
+
+bool DEBUG_MODE = true;
+
+void log_debug(const char *mensaje, const char *texto) {
+    if (DEBUG_MODE) {
+        fprintf(stderr, "[DEBUG] %s: '%s'\n", mensaje, texto);
+    }
+}
+
+int tokens_reconocidos = 0,  tokens_noreconocidos = 0;
 
 %}
 
@@ -22,22 +33,29 @@ noReconocido    [^ \t\n]
 
 %%
 
-[1-9][0-9]*             { printf("\nEncontre una constante entera decimal: %s\n", yytext); }
-0[0-7]*                 { printf("\nEncontre una constante entera octal: %s\n", yytext); }
-0[xX][0-9a-fA-F]+       { printf("\nEncontre una constante entera hexadecimal: %s\n", yytext); }
-{punctuators}           { printf("\nEncontre un puntuador: %s\n", yytext); }
-{operators}             { printf("\nEncontre un operador: %s\n", yytext); }
-{identifier}            { printf("\nEncontre un identificador: %s\n", yytext); }
-{noReconocido}          { printf("\nEncontre un token no reconocido: %s", yytext); BEGIN(tokenNoReconocido); }
+[1-9][0-9]*             { log_debug("Encontre una constante entera decimal:", yytext); tokens_reconocidos++; }
+0[0-7]* { log_debug("Constante entera octal", yytext); tokens_reconocidos++; }
+0[xX][0-9a-fA-F]+       { log_debug("Constante entera hexadecimal", yytext); tokens_reconocidos++; }
+{punctuators}           { log_debug("Puntuador", yytext); tokens_reconocidos++; }
+{operators}             { log_debug("Operador", yytext); tokens_reconocidos++; }
+{identifier}            { log_debug("Identificador", yytext); tokens_reconocidos++; }
+{noReconocido}          { if (DEBUG_MODE) fprintf(stderr, "[DEBUG] ERROR: Token no reconocido: '%s", yytext);
+                            tokens_no_reconocidos++;
+                            BEGIN(tokenNoReconocido);  }
 {centinela}             { }
 
 /*
     tokenNoReconocidos es un automata separado que se ejecuta al identificar el primer caracter no reconocido. Este tiene sus propias declaraciones y estados.
 */
 <tokenNoReconocido>{
-    [^ \t\n]+           { printf("%s", yytext); BEGIN(INITIAL); printf("\n"); }
-    [ \t\n]             {yyless(0); printf("\n"); BEGIN(INITIAL); } 
-    <<EOF>>             { printf("\n"); BEGIN(INITIAL); }
+    [^ \t\n]+           { if (DEBUG_MODE) fprintf(stderr, "%s", yytext); 
+                            BEGIN(INITIAL); 
+                            if (DEBUG_MODE) fprintf(stderr, "'\n");  }
+    [ \t\n]             {yyless(0); 
+                            BEGIN(INITIAL); 
+                            if (DEBUG_MODE) fprintf(stderr, "'\n"); } 
+    <<EOF>>             { BEGIN(INITIAL); 
+                            if (DEBUG_MODE) fprintf(stderr, "'\n");  }
 }
 
 %%
