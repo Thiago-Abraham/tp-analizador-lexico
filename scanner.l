@@ -11,7 +11,8 @@ void log_debug(const char *mensaje, const char *texto) {
     }
 }
 
-int tokens_reconocidos = 0,  tokens_noreconocidos = 0;
+int tokens_reconocidos = 0;
+int tokens_no_reconocidos = 0;
 
 %}
 
@@ -44,9 +45,9 @@ noReconocido    [^ \t\n]
                             BEGIN(tokenNoReconocido);  }
 {centinela}             { }
 
-/* 
-    tokenNoReconocidos es un automata separado que se ejecuta al identificar el primer caracter no reconocido. Este tiene sus propias declaraciones y estados.
-*/
+
+
+
 <tokenNoReconocido>{
     [^ \t\n]+ {
         if (DEBUG_MODE) fprintf(stderr, "%s", yytext); 
