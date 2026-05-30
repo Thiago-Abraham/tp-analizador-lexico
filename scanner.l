@@ -44,18 +44,24 @@ noReconocido    [^ \t\n]
                             BEGIN(tokenNoReconocido);  }
 {centinela}             { }
 
-/*
+/* 
     tokenNoReconocidos es un automata separado que se ejecuta al identificar el primer caracter no reconocido. Este tiene sus propias declaraciones y estados.
 */
 <tokenNoReconocido>{
-    [^ \t\n]+           { if (DEBUG_MODE) fprintf(stderr, "%s", yytext); 
+    [^ \t\n]+           {
+                            if (DEBUG_MODE) fprintf(stderr, "%s", yytext); 
                             BEGIN(INITIAL); 
-                            if (DEBUG_MODE) fprintf(stderr, "'\n");  }
-    [ \t\n]             {yyless(0); 
+                            if (DEBUG_MODE) fprintf(stderr, "'\n");
+                        }
+    [ \t\n]             {
+                            yyless(0); 
                             BEGIN(INITIAL); 
-                            if (DEBUG_MODE) fprintf(stderr, "'\n"); } 
-    <<EOF>>             { BEGIN(INITIAL); 
-                            if (DEBUG_MODE) fprintf(stderr, "'\n");  }
+                            if (DEBUG_MODE) fprintf(stderr, "'\n");
+                        } 
+    <<EOF>>             {
+                            BEGIN(INITIAL); 
+                            if (DEBUG_MODE) fprintf(stderr, "'\n");
+                        }
 }
 
 %%
@@ -79,5 +85,12 @@ int main(int argc, char *argv[]) {
     yylex(); 
 
     fclose(yyin); 
+
+    // Reporte final de tokens reconocidos y no reconocidos
+    printf("==============================================\n");
+    printf("Total de tokens válidos reconocidos: %d\n", tokens_reconocidos);
+    printf("Total de secuencias no reconocidas:  %d\n", tokens_no_reconocidos);
+    printf("==============================================\n");
+
     return 0;
 }
