@@ -3,11 +3,15 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#define COLOR_VERDE  "\033[32m"
+#define COLOR_ROJO   "\033[31m"
+#define COLOR_RESET  "\033[0m"
+
 bool DEBUG_MODE = false;
 
 void log_debug(const char *mensaje, const char *texto) {
     if (DEBUG_MODE) {
-        fprintf(stderr, "[DEBUG] %s: %s\n", mensaje, texto);
+        fprintf(stderr, COLOR_VERDE "[DEBUG] %s: %s" COLOR_RESET "\n", mensaje, texto);
     } else {
         /*esto luego deberia ser la funcion de imprimir reporte que da todo el formato*/
         fprintf(stdout, "%s: %s\n", mensaje, texto);
@@ -24,13 +28,10 @@ int largo = 0;
 %pointer
 %option noyywrap
 
-/*Condiciones de Arranque*/
-%x tokenNoReconocido
-
 /* Declaraciones */
 centinela                                    [ \t\n]
 nondigit                                     [_a-zA-Z]
-constanteCaracter                            \'[a-zA-Z]\'
+constanteCaracter                            \'([a-zA-Z]|(\\n)|(\\t)|(\\{octal})|(\\{hexadecimal}))\'
 literalesCadena                              \".*\"
 digit                                        [0-9]
 decimal                                      [1-9]{digit}*
@@ -55,7 +56,7 @@ reservadaDeIteracion                         (do|while|for)
 reservadaSalto                               (goto|continue|break|return) 
 reservadaUnario                              (sizeof)
 identifier                                   {nondigit}({nondigit}|{digit})*
-noReconocido                                 [^ \t\n]
+noReconocido                                 [^ \t\n()\[\]{}.*+\-~!&?|/%<>#,:=;^"']+
 
 %%
 
@@ -78,31 +79,9 @@ noReconocido                                 [^ \t\n]
 {reservadaSalto}                             { log_debug("Palabra reservada (Salto)", yytext); tokens_reconocidos++; }
 {reservadaUnario}                            { log_debug("Palabra reservada (Unario)", yytext); tokens_reconocidos++; }
 {identifier}                                 { log_debug("Identificador", yytext); tokens_reconocidos++; }                                                 
-{noReconocido}                               { if (DEBUG_MODE) fprintf(stderr, "[DEBUG] ERROR: Token no reconocido: %s", yytext);
-                                                 tokens_no_reconocidos++;
-                                                 BEGIN(tokenNoReconocido);  }
+{noReconocido}                               { if (DEBUG_MODE) fprintf(stderr, COLOR_ROJO "[DEBUG] ERROR: Token no reconocido: %s" COLOR_RESET "\n", yytext);
+                                               tokens_no_reconocidos++; }
 {centinela}                                  { }
-
-
- 
- 
-
-<tokenNoReconocido>{
-    [^ \t\n]+ {
-        if (DEBUG_MODE) fprintf(stderr, "%s", yytext); 
-        BEGIN(INITIAL); 
-        if (DEBUG_MODE) fprintf(stderr, "'\n");
-    }
-    [ \t\n] {
-        yyless(0); 
-        BEGIN(INITIAL); 
-        if (DEBUG_MODE) fprintf(stderr, "'\n");
-    } 
-    <<EOF>> {
-        BEGIN(INITIAL); 
-        if (DEBUG_MODE) fprintf(stderr, "'\n");
-    }
-}
 
 %%
 
