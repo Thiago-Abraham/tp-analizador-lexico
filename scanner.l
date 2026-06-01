@@ -33,8 +33,8 @@ int largo = 0;
 %option noyywrap
 
 /* Declaraciones */
-tabulacion                                    [ \t]+
-saltoDeLinea                                  \n+
+tabulacion                                   [ \t]+
+saltoDeLinea                                 \n+
 nondigit                                     [_a-zA-Z]
 constanteCaracter                            \'([a-zA-Z]|(\\n)|(\\t)|(\\{octal})|(\\{hexadecimal}))\'
 literalesCadena                              \".*\"
