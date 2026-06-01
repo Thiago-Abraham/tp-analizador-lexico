@@ -22,3 +22,26 @@ NodoToken* CrearNodo (const char* lexema, TipoToken tipo)
     }
     return nuevo;
 }
+
+void agregar_o_actualizar(NodoToken* lista, const char* lexema, TipoToken tipo) {
+    if (lista == NULL) 
+    {
+        lista = crear_nodo(lexema, tipo);
+        return;
+    }
+
+    NodoToken* actual = lista;
+    while (actual != NULL) 
+    {
+        if (strcmp(actual->lexema, lexema) == 0 && actual->tipo == tipo) {
+            actual->contador++;
+            return;
+        }
+        if (actual->siguiente == NULL) 
+        {
+            break;              // Llegamos al final de la lista sin encontrar el token, así que salimos del bucle para agregar uno nuevo, pero sin avanzar a un nodo nulo.
+        }
+        actual = actual->siguiente;
+    }
+    actual->siguiente = crear_nodo(lexema, tipo);
+}
