@@ -45,3 +45,13 @@ void agregar_o_actualizar(NodoToken* lista, const char* lexema, TipoToken tipo) 
     }
     actual->siguiente = crear_nodo(lexema, tipo);
 }
+
+void liberarlista (NodoToken* lista) {
+    NodoToken* actual = lista;
+    while (actual != NULL) {
+        NodoToken* aux = actual->siguiente;
+        free(actual->lexema); 
+        free(actual); 
+        actual = aux; 
+    }
+}
