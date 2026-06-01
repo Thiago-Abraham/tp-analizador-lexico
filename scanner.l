@@ -15,10 +15,10 @@ bool DEBUG_MODE = false;
 
 void log_debug(const char *mensaje, const char *texto, int linea, int columna) {
     if (DEBUG_MODE) {
-        fprintf(stderr, COLOR_VERDE "[DEBUG] %s: %s" COLOR_RESET "\n", mensaje, texto, linea, columna);
+        fprintf(stderr, COLOR_VERDE "[DEBUG] %s: %s: linea %d, columna %d" COLOR_RESET "\n", mensaje, texto, linea, columna);
     } else {
         /*esto luego deberia ser la funcion de imprimir reporte que da todo el formato*/
-        fprintf(stdout, "%s: %s\n", mensaje, texto);
+        fprintf(stdout, "%s: %s: linea %d, columna %d\n", mensaje, texto, linea, columna);
     }
 }
 
@@ -33,7 +33,8 @@ int largo = 0;
 %option noyywrap
 
 /* Declaraciones */
-centinela                                    [ \t]
+tabulacion                                    [ \t]+
+saltoDeLinea                                  \n+
 nondigit                                     [_a-zA-Z]
 constanteCaracter                            \'([a-zA-Z]|(\\n)|(\\t)|(\\{octal})|(\\{hexadecimal}))\'
 literalesCadena                              \".*\"
@@ -83,10 +84,10 @@ noReconocido                                 [^ \t\n()\[\]{}.*+\-~!&?|/%<>#,:=;^
 {reservadaSalto}                             { log_debug("Palabra reservada (Salto)", yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }
 {reservadaUnario}                            { log_debug("Palabra reservada (Unario)", yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }
 {identifier}                                 { log_debug("Identificador", yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }                                                 
-{noReconocido}                               { if (DEBUG_MODE) fprintf(stderr, COLOR_ROJO "[DEBUG] ERROR: Token no reconocido: %s" COLOR_RESET "\n", yytext, linea_actual, columna_actual);
+{noReconocido}                               { if (DEBUG_MODE) fprintf(stderr, COLOR_ROJO "[DEBUG] ERROR: Token no reconocido: %s: linea %d, columna %d" COLOR_RESET "\n", yytext, linea_actual, columna_actual);
                                                tokens_no_reconocidos++; columna_actual += yyleng; }
-{centinela}                                  { columna_actual += yyleng; }
-\n+  { linea_actual += yyleng; columna_actual = INICIO_CONTEO_COLUMNA; }
+{tabulacion}                                 { columna_actual += yyleng; }
+{saltoDeLinea}                               { linea_actual += yyleng; columna_actual = INICIO_CONTEO_COLUMNA; }
 
 %%
 
