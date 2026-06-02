@@ -36,6 +36,8 @@ typedef struct NodoToken {
     TipoToken tipo;                         
     char* lexema;                         // Puntero al texto del token
     int contador;
+    int linea;
+    int columna;
 
     struct NodoToken* siguiente;
 } NodoToken;
