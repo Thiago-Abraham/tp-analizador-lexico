@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include < stdlib.h>
+#include <stdlib.h>
 #include <string.h>
 #include "tokens.h"
 
@@ -9,7 +9,7 @@ NodoToken* crearNodo (const char* lexema, TipoToken tipo, int linea, int columna
 
     if (nuevo == NULL)
     {
-        fprintf(stderr, "Error: No fue posible asignar memoria al nodo.\n")
+        fprintf(stderr, "Error: No fue posible asignar memoria al nodo.\n");
         return NULL;
     }
 
