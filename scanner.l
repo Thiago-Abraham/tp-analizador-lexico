@@ -13,6 +13,8 @@ int linea_actual = INICIO_CONTEO_LINEA, columna_actual = INICIO_CONTEO_COLUMNA;
 
 bool DEBUG_MODE = false;
 
+NodoToken* listaTokens = NULL; // Lista para almacenar los tokens reconocidos
+
 void log_debug(const char *mensaje, const char *texto, int linea, int columna) {
     if (DEBUG_MODE) {
         fprintf(stderr, COLOR_VERDE "[DEBUG] %s: %s: linea %d, columna %d" COLOR_RESET "\n", mensaje, texto, linea, columna);
@@ -119,11 +121,15 @@ int main(int argc, char *argv[]) {
 
     fclose(yyin); 
 
+    imprimirLista(listaTokens); 
+
     // Reporte final de tokens reconocidos y no reconocidos
     printf("\n==============================================\n");
     printf("Total de tokens válidos reconocidos: %d\n", tokens_reconocidos);
     printf("Total de secuencias no reconocidas:  %d\n", tokens_no_reconocidos);
     printf("==============================================\n");
+
+    liberarLista(listaTokens);
 
     return 0;
 }
