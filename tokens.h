@@ -2,46 +2,34 @@
 #define TOKENS_H
 
 typedef enum {
-    tokenNoReconocido,
-    tokenCentinela,
-
-    /* Constantes numéricas */
-    tokenDecimal,
-    tokenOctal,
-    tokenHexadecimal,
-    tokenReal,
-    tokenNumero,
-
-    /* Literales */
-    tokenConstanteCaracter,
-    tokenLiteralCadena,
-
-    /* Puntuadores y operadores (categorías generales) */
-    tokenPuntuador,
-    tokenOperador,
-
-    /* Palabras reservadas por categoría */
-    tokenReservadaEspecificadorAlmacenamiento,
-    tokenReservadaEspecificadorTipo,
-    tokenReservadaCalificadorTipo,
-    tokenReservadaStructUnion,
-    tokenReservadaEnumeracion,
-    tokenReservadaEtiqueta,
-    tokenReservadaSeleccion,
-    tokenReservadaIteracion,
-    tokenReservadaSalto,
-    tokenReservadaUnario,
-
-    /* Identificador */
-    tokenIdentificador,
-
-    /* Operadores / símbolos específicos (mantener compatibilidad con uso previo) */
-    tokenSuma,
-    tokenResta,
-    tokenMultiplicacion,
-    tokenDivision,
-    tokenParentesisAbre,
-    tokenParentesisCierra
+tokencentinela,
+tokennondigit,                                   
+tokenconstanteCaracter,                            
+tokenliteralesCadena,                           
+tokendigit,                                        
+tokendecimal,                                      
+tokenoctalDigit,                                 
+tokenoctal,                                     
+tokenhexaDigit,                                
+tokenhexadecimal,                                 
+tokenrealPuntoInicial,                           
+tokenrealConPunto,                          
+tokenrealSoloExponencial,                         
+tokenreal,                                       
+tokenoperators,                                    
+tokenpunctuators,                                  
+tokenreservadaEspecificadorAlmacenamiento,        
+tokenreservadaEspecificadorTipo,                   
+tokenreservadaDeCalificadoresDeTipo,               
+tokenreservadaDeStructUnion,                     
+tokenreservadaDeEnumeracion,                       
+tokenreservadaEtiqueta,                            
+tokenreservadaSeleccion,                           
+tokenreservadaDeIteracion,                         
+tokenreservadaSalto,                              
+tokenreservadaUnario,                              
+tokenidentifier,                                   
+tokennoReconocido                                 
 } TipoToken;
 
 typedef struct NodoToken {

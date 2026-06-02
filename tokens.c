@@ -3,14 +3,14 @@
 #include <string.h>
 #include "tokens.h"
 
-NodoToken* CrearNodo (const char* lexema, TipoToken tipo)
+NodoToken* crearNodo (const char* lexema, TipoToken tipo)
 {
     NodoToken* nuevo= (NodoToken*) malloc(sizeof(NodoToken));
 
     if (nuevo == NULL)
     {
         fprintf(stderr, "Error: No fue posible asignar memoria al nodo.\n")
-        return 1;
+        return NULL;
     }
 
     else
@@ -23,14 +23,14 @@ NodoToken* CrearNodo (const char* lexema, TipoToken tipo)
     return nuevo;
 }
 
-void agregar_o_actualizar(NodoToken* lista, const char* lexema, TipoToken tipo) {
-    if (lista == NULL) 
+void agregarNodoALista(NodoToken** lista, const char* lexema, TipoToken tipo) {
+    if (*lista == NULL) 
     {
-        lista = crear_nodo(lexema, tipo);
+        *lista = crearNodo(lexema, tipo);
         return;
     }
 
-    NodoToken* actual = lista;
+    NodoToken* actual = *lista;
     while (actual != NULL) 
     {
         if (strcmp(actual->lexema, lexema) == 0 && actual->tipo == tipo) {
@@ -43,15 +43,23 @@ void agregar_o_actualizar(NodoToken* lista, const char* lexema, TipoToken tipo) 
         }
         actual = actual->siguiente;
     }
-    actual->siguiente = crear_nodo(lexema, tipo);
+    actual->siguiente = crearNodo(lexema, tipo);
 }
 
-void liberarlista (NodoToken* lista) {
+void liberarLista (NodoToken* lista) {
     NodoToken* actual = lista;
     while (actual != NULL) {
         NodoToken* aux = actual->siguiente;
         free(actual->lexema); 
         free(actual); 
         actual = aux; 
+    }
+}
+
+void imprimirLista (NodoToken* lista) {
+    NodoToken* actual = lista;
+    while (actual != NULL) {
+        printf("Token: %s, Tipo: %d, Contador: %d\n", actual->lexema, actual->tipo, actual->contador);
+        actual = actual->siguiente;
     }
 }
