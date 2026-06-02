@@ -43,4 +43,9 @@ typedef struct NodoToken {
     struct NodoToken* siguiente;
 } NodoToken;
 
+NodoToken* crearNodo(const char* lexema, TipoToken tipo, int linea, int columna);
+void agregarNodoALista(NodoToken** lista, const char* lexema, TipoToken tipo, int linea, int columna);
+void liberarLista(NodoToken* lista);
+void imprimirLista(NodoToken* lista);
+
 #endif // TOKENS_H 

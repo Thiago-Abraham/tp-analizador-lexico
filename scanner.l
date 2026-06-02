@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include "tokens.h"
 
 #define COLOR_VERDE  "\033[32m"
 #define COLOR_ROJO   "\033[31m"
