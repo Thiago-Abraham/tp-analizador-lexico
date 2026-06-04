@@ -126,11 +126,13 @@ int main(int argc, char *argv[]) {
 
     fclose(yyin); 
 
-    // Reporte final de tokens reconocidos y no reconocidos
-    printf("\n==============================================\n");
-    printf("Total de tokens válidos reconocidos: %d\n", tokens_reconocidos);
-    printf("Total de secuencias no reconocidas:  %d\n", tokens_no_reconocidos);
-    printf("==============================================\n");
+    // Reporte final de tokens reconocidos y no reconocidos en modo DEBUG
+    if (DEBUG_MODE) {
+        printf("\n==============================================\n");
+        printf("Total de tokens válidos reconocidos: %d\n", tokens_reconocidos);
+        printf("Total de tokens error no reconocidos:  %d\n", tokens_no_reconocidos);
+        printf("==============================================\n");
+    }
 
     return 0;
 }
