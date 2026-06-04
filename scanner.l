@@ -16,12 +16,17 @@ bool DEBUG_MODE = false;
 
 NodoToken* listaTokens = NULL; // Lista para almacenar los tokens reconocidos
 
-void log_debug(const char *mensaje, const char *texto, int linea, int columna) {
-    if (DEBUG_MODE) {
+void imprimirReporte(const char *mensaje, const char *texto, int linea, int columna, char error /*pasar E si es error*/) {
+    if (DEBUG_MODE && (error == 'E')) {
+        fprintf(stderr, COLOR_ROJO "[DEBUG] ERROR: %s: %s: linea %d, columna %d" COLOR_RESET "\n", mensaje, texto, linea, columna);
+    } else if (DEBUG_MODE) {
         fprintf(stderr, COLOR_VERDE "[DEBUG] %s: %s: linea %d, columna %d" COLOR_RESET "\n", mensaje, texto, linea, columna);
     } else {
         /*esto luego deberia ser la funcion de imprimir reporte que da todo el formato*/
+
         fprintf(stdout, "%s: %s: linea %d, columna %d\n", mensaje, texto, linea, columna);
+        imprimirLista(listaTokens); 
+        liberarLista(listaTokens);
     }
 }
 
@@ -68,27 +73,26 @@ noReconocido                                 [^ \t\n()\[\]{}.*+\-~!&?|/%<>#,:=;^
 
 %%
 
-{decimal}                                    { log_debug("Encontre una constante entera decimal", yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }
-{octal}                                      { log_debug("Constante entera octal", yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }
-{hexadecimal}                                { log_debug("Constante entera hexadecimal", yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }
-{real}                                       { log_debug("Constante real", yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }
-{constanteCaracter}                          { log_debug("Constante de caracter", yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }
-{literalesCadena}                            { log_debug("Literal de cadena o String", yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }
-{punctuators}                                { log_debug("Puntuador", yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }
-{operators}                                  { log_debug("Operador", yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }
-{reservadaEspecificadorAlmacenamiento}       { log_debug("Palabra reservada (Especificadores de Almacenamiento)", yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }
-{reservadaEspecificadorTipo}                 { log_debug("Palabra reservada (Especificadores de Tipo)", yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }
-{reservadaDeCalificadoresDeTipo}             { log_debug("Palabra reservada (Calificadores de Tipo)", yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }
-{reservadaDeStructUnion}                     { log_debug("Palabra reservada (Struct o Union)", yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }
-{reservadaDeEnumeracion}                     { log_debug("Palabra reservada (Enumeración)", yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }
-{reservadaEtiqueta}                          { log_debug("Palabra reservada (Etiqueta)", yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }
-{reservadaSeleccion}                         { log_debug("Palabra reservada (Selección)", yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }
-{reservadaDeIteracion}                       { log_debug("Palabra Reservada (Iteracion)",yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }
-{reservadaSalto}                             { log_debug("Palabra reservada (Salto)", yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }
-{reservadaUnario}                            { log_debug("Palabra reservada (Unario)", yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }
-{identifier}                                 { log_debug("Identificador", yytext, linea_actual, columna_actual); tokens_reconocidos++; columna_actual += yyleng; }                                                 
-{noReconocido}                               { if (DEBUG_MODE) fprintf(stderr, COLOR_ROJO "[DEBUG] ERROR: Token no reconocido: %s: linea %d, columna %d" COLOR_RESET "\n", yytext, linea_actual, columna_actual);
-                                               tokens_no_reconocidos++; columna_actual += yyleng; }
+{decimal}                                    { imprimirReporte("Encontre una constante entera decimal", yytext, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
+{octal}                                      { imprimirReporte("Constante entera octal", yytext, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
+{hexadecimal}                                { imprimirReporte("Constante entera hexadecimal", yytext, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
+{real}                                       { imprimirReporte("Constante real", yytext, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
+{constanteCaracter}                          { imprimirReporte("Constante de caracter", yytext, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
+{literalesCadena}                            { imprimirReporte("Literal de cadena o String", yytext, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
+{punctuators}                                { imprimirReporte("Puntuador", yytext, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
+{operators}                                  { imprimirReporte("Operador", yytext, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
+{reservadaEspecificadorAlmacenamiento}       { imprimirReporte("Palabra reservada (Especificadores de Almacenamiento)", yytext, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
+{reservadaEspecificadorTipo}                 { imprimirReporte("Palabra reservada (Especificadores de Tipo)", yytext, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
+{reservadaDeCalificadoresDeTipo}             { imprimirReporte("Palabra reservada (Calificadores de Tipo)", yytext, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
+{reservadaDeStructUnion}                     { imprimirReporte("Palabra reservada (Struct o Union)", yytext, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
+{reservadaDeEnumeracion}                     { imprimirReporte("Palabra reservada (Enumeración)", yytext, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
+{reservadaEtiqueta}                          { imprimirReporte("Palabra reservada (Etiqueta)", yytext, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
+{reservadaSeleccion}                         { imprimirReporte("Palabra reservada (Selección)", yytext, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
+{reservadaDeIteracion}                       { imprimirReporte("Palabra Reservada (Iteracion)",yytext, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
+{reservadaSalto}                             { imprimirReporte("Palabra reservada (Salto)", yytext, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
+{reservadaUnario}                            { imprimirReporte("Palabra reservada (Unario)", yytext, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
+{identifier}                                 { imprimirReporte("Identificador", yytext, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }                                                 
+{noReconocido}                               { imprimirReporte("Token no reconocido", yytext, linea_actual, columna_actual, 'E'); tokens_no_reconocidos++; columna_actual += yyleng; }
 {tabulacion}                                 { columna_actual += yyleng; }
 {saltoDeLinea}                               { linea_actual += yyleng; columna_actual = INICIO_CONTEO_COLUMNA; }
 
@@ -122,15 +126,11 @@ int main(int argc, char *argv[]) {
 
     fclose(yyin); 
 
-    imprimirLista(listaTokens); 
-
     // Reporte final de tokens reconocidos y no reconocidos
     printf("\n==============================================\n");
     printf("Total de tokens válidos reconocidos: %d\n", tokens_reconocidos);
     printf("Total de secuencias no reconocidas:  %d\n", tokens_no_reconocidos);
     printf("==============================================\n");
-
-    liberarLista(listaTokens);
 
     return 0;
 }
