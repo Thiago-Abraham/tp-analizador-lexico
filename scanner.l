@@ -16,7 +16,7 @@ bool DEBUG_MODE = false;
 
 NodoToken* listaTokens = NULL; // Lista para almacenar los tokens reconocidos
 
-void imprimirReporte(const char *mensaje, const char *texto, int linea, int columna, char error /*pasar E si es error*/) {
+void imprimirReporte(const char *mensaje, const char *texto, int linea, int columna, char error /*pasar E si es error A si es acierto (realmente solo importa E)*/) {
     if (DEBUG_MODE && (error == 'E')) {
         fprintf(stderr, COLOR_ROJO "[DEBUG] ERROR: %s: %s: linea %d, columna %d" COLOR_RESET "\n", mensaje, texto, linea, columna);
     } else if (DEBUG_MODE) {
@@ -113,7 +113,6 @@ int main(int argc, char *argv[]) {
         DEBUG_MODE = true;
     } 
  
-    
     FILE *archivo = fopen(argv[1], "r");
     if (!archivo) {
         fprintf(stderr, "Error crítico: No se pudo abrir el archivo '%s'\n", argv[1]);
