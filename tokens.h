@@ -33,10 +33,24 @@ tokenIdentifier,
 tokenNoReconocido   
 } TipoToken;
 
+typedef enum {
+    tipoListaIdentificadores,
+    tipoListaLiteralesCadena,
+    tipoListaPalabrasReservadas,
+    tipoListaConstantesDecimales,
+    tipoListaConstantesHexadecimales,
+    tipoListaConstantesOctales,
+    tipoListaConstantesReales,
+    tipoListaConstantesCaracter,
+    tipoListaOperadoresYPuntuadores,
+    tipoListaNoReconocidos
+} TipoDeLista;
+
 typedef struct NodoToken {
     TipoToken tipo;                         
     char* lexema;                         // Puntero al texto del token
     int contador;
+    size_t longitud;
     int linea;
     int columna;
 
@@ -47,5 +61,6 @@ NodoToken* crearNodo(const char* lexema, TipoToken tipo, int linea, int columna)
 void agregarNodoALista(NodoToken** lista, const char* lexema, TipoToken tipo, int linea, int columna);
 void liberarLista(NodoToken* lista);
 void imprimirLista(NodoToken* lista);
+void darFormatoALista(NodoToken** lista, TipoDeLista tipo);
 
 #endif // TOKENS_H 

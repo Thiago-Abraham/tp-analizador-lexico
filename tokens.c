@@ -15,9 +15,10 @@ NodoToken* crearNodo (const char* lexema, TipoToken tipo, int linea, int columna
 
     else
     {   /* strdup mide el tamaño de la cadena y hace un malloc automatico */
-        nuevo->lexema = strdup(lexema); 
         nuevo->tipo = tipo;
+        nuevo->lexema = strdup(lexema); 
         nuevo->contador = 1;
+        nuevo->longitud = strlen(lexema);
         nuevo->linea = linea;
         nuevo->columna = columna;
         nuevo->siguiente = NULL;
@@ -63,5 +64,33 @@ void imprimirLista (NodoToken* lista) {
     while (actual != NULL) {
         printf("Token: %s | Tipo: %d | Contador: %d | Linea: %d | Columna: %d\n", actual->lexema, actual->tipo, actual->contador, actual->linea, actual->columna);
         actual = actual->siguiente;
+    }
+}
+
+void ordenarAlfabeticamente (NodoToken** lista) {
+    //FUNCION A DESARROLLAR
+}
+
+void ordenarPorLongitud (NodoToken** lista) {
+    //FUNCION A DESARROLLAR
+}
+
+//HAY QUE SEGUIR DESARROLLANDO LAS FUNCIONES PARA CADA CASO, LEER CONSIGNA DE TP
+void darFormatoALista (NodoToken** lista, TipoDeLista tipo) {
+    switch (tipo) {
+        case tipoListaIdentificadores:
+            ordenarAlfabeticamente(lista);
+            break;
+        case tipoListaLiteralesCadena:
+            ordenarPorLongitud(lista);
+            break;
+        case tipoListaPalabrasReservadas:
+        case tipoListaConstantesHexadecimales:
+        case tipoListaConstantesDecimales:
+        case tipoListaConstantesOctales:
+        case tipoListaConstantesReales:
+        case tipoListaConstantesCaracter:
+        case tipoListaOperadoresYPuntuadores:
+        case tipoListaNoReconocidos:
     }
 }
