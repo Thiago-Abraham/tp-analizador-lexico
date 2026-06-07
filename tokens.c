@@ -17,7 +17,7 @@ NodoToken* crearNodo (const char* lexema, TipoToken tipo, int linea, int columna
     {   /* strdup mide el tamaño de la cadena y hace un malloc automatico */
         nuevo->tipo = tipo;
         nuevo->lexema = strdup(lexema); 
-        nuevo->contador = 1;
+      //nuevo->contador = 1; 
         nuevo->longitud = strlen(lexema);
         nuevo->linea = linea;
         nuevo->columna = columna;
@@ -36,10 +36,12 @@ void agregarNodoALista(NodoToken** lista, const char* lexema, TipoToken tipo, in
     NodoToken* actual = *lista;
     while (actual != NULL) 
     {
+        //Se elimina esta funcionalidad ya que al guardarlos en un mismo nodo, tienen la misma fila y columna
+        /*
         if (strcmp(actual->lexema, lexema) == 0 && actual->tipo == tipo) {
             actual->contador++;
             return;
-        }
+        }*/
         if (actual->siguiente == NULL) 
         {
             break;              // Llegamos al final de la lista sin encontrar el token, así que salimos del bucle para agregar uno nuevo, pero sin avanzar a un nodo nulo.
@@ -62,17 +64,60 @@ void liberarLista (NodoToken* lista) {
 void imprimirLista (NodoToken* lista) {
     NodoToken* actual = lista;
     while (actual != NULL) {
-        printf("Token: %s | Tipo: %d | Contador: %d | Linea: %d | Columna: %d\n", actual->lexema, actual->tipo, actual->contador, actual->linea, actual->columna);
+        printf("Token: %s | Tipo: %d | Linea: %d | Columna: %d\n", actual->lexema, actual->tipo, actual->linea, actual->columna);
         actual = actual->siguiente;
-    }
+    } 
 }
 
 void ordenarAlfabeticamente (NodoToken** lista) {
-    //FUNCION A DESARROLLAR
+    
+    //iteraciones varia entre 0 y 1 cada vez que se inicia el bucle para saber si se cambio algun nodo de lugar en dicha iteracion del bucle
+    int iteraciones;
+    NodoToken *actual = NULL;
+    NodoToken *ant = NULL;
+    NodoToken *ultimo = NULL;
+    //primero pongo el bucle despues la condicion, siempre quiero evaluar almenos una vez
+    do{
+        iteraciones = 0;
+        actual = *lista;
+        ant = NULL;
+    
+        while(actual->siguiente != ultimo) {
+            NodoToken *sig = actual->siguiente;
+            // si el siguiente esta primero alfabeticamente
+            if(strcasecmp(actual->lexema, sig->lexema) > 0){
+
+                actual->siguiente = sig->siguiente;
+                sig->siguiente = actual;
+            
+                if(ant == NULL){
+                    // actual sigue siendo el primrer nodo de la lista asi que lo cambio por sig
+                    *lista = sig;
+                }
+                else{
+                    //Si no, reconecto el anterior al siguiente
+                    ant->siguiente = sig;
+                }
+
+                ant = sig;
+                iteraciones = 1;
+            }
+            else{
+                // no hubo ningun cambio necesario entre actual y sig asi que avanzo en la lista normalmente
+                ant = actual;
+                actual = actual->siguiente;
+            }
+        }
+        //Cuando termina el while de arriba, el actual siempre queda en el ultimo nodo que va a ser siempre el ultimo valor alfabetico, haciendo ultimo == actual hago que termine el while de arriba en el que ya fue ordenado como ultimo definitivo anteriormente. 
+        ultimo = actual;
+
+    }while(iteraciones); //si no hubo ninguna iteracion desde el principio, ya venia ordenada y termina todo el bucle
 }
 
 void ordenarPorLongitud (NodoToken** lista) {
     //FUNCION A DESARROLLAR
+
+    
 }
 
 //HAY QUE SEGUIR DESARROLLANDO LAS FUNCIONES PARA CADA CASO, LEER CONSIGNA DE TP

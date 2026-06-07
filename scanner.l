@@ -90,7 +90,7 @@ noReconocido                                 [^ \t\n()\[\]{}.*+\-~!&?|/%<>#,:=;^
 
 %%
 
-{decimal}                                    { imprimirReporte("Encontre una constante entera decimal", yytext, tokenDecimal, &listaConstantesDecimales, tipoListaConstantesDecimales, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
+{decimal}                                    { imprimirReporte("Constante entera decimal", yytext, tokenDecimal, &listaConstantesDecimales, tipoListaConstantesDecimales, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
 {octal}                                      { imprimirReporte("Constante entera octal", yytext, tokenOctal, &listaConstantesOctales, tipoListaConstantesOctales, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
 {hexadecimal}                                { imprimirReporte("Constante entera hexadecimal", yytext, tokenHexadecimal, &listaConstantesHexadecimales, tipoListaConstantesHexadecimales, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
 {real}                                       { imprimirReporte("Constante real", yytext, tokenReal, &listaConstantesReales, tipoListaConstantesReales, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
