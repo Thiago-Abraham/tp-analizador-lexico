@@ -241,7 +241,7 @@ void imprimirListaFormateada () {
         fprintf(stdout, "-\n");
     } else {
         //darFormatoALista(&listaConstantesDecimales, tipoListaConstantesDecimales);
-        imprimirLista(listaConstantesDecimales);
+        imprimirLista(listaConstantesDecimales, tipoListaConstantesDecimales);
         liberarLista(listaConstantesDecimales);
 
     }

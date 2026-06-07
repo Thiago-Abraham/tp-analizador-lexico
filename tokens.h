@@ -49,7 +49,7 @@ typedef enum {
 typedef struct NodoToken {
     TipoToken tipo;                         
     char* lexema;                         // Puntero al texto del token
-    /*int contador; */
+    int contador;
     size_t longitud;
     int linea;
     int columna;

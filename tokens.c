@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "tokens.h"
+#include <math.h>
 
 NodoToken* crearNodo (const char* lexema, TipoToken tipo, int linea, int columna)
 {
@@ -17,7 +18,7 @@ NodoToken* crearNodo (const char* lexema, TipoToken tipo, int linea, int columna
     {   /* strdup mide el tamaño de la cadena y hace un malloc automatico */
         nuevo->tipo = tipo;
         nuevo->lexema = strdup(lexema); 
-      //nuevo->contador = 1; 
+        nuevo->contador = 1; 
         nuevo->longitud = strlen(lexema);
         nuevo->linea = linea;
         nuevo->columna = columna;
@@ -36,12 +37,11 @@ void agregarNodoALista(NodoToken** lista, const char* lexema, TipoToken tipo, in
     NodoToken* actual = *lista;
     while (actual != NULL) 
     {
-        //Se elimina esta funcionalidad ya que al guardarlos en un mismo nodo, tienen la misma fila y columna
-        /*
+        //Se modifica esta funcionalidad ya que al guardarlos en un mismo nodo, tienen la misma fila y columna, la solucion planteada es aumentar el contador pero dejarlos por separado de todos modos, despues se formatea para eliminar repetidos en caso de que se pida que no salgan las repeticiones por pantalla
         if (strcmp(actual->lexema, lexema) == 0 && actual->tipo == tipo) {
             actual->contador++;
             return;
-        }*/
+        }
         if (actual->siguiente == NULL) 
         {
             break;              // Llegamos al final de la lista sin encontrar el token, así que salimos del bucle para agregar uno nuevo, pero sin avanzar a un nodo nulo.
@@ -61,80 +61,167 @@ void liberarLista (NodoToken* lista) {
     }
 }
 
-void imprimirLista (NodoToken* lista) {
+
+// imprimirLista segun el tipo de lista
+void imprimirLista (NodoToken* lista, TipoDeLista tipo) {
     NodoToken* actual = lista;
+    switch (tipo) {
+        case tipoListaIdentificadores:
+            ordenarListaPor(lista, compararAlfabetico); //cambiar esto
+            break;
+        case tipoListaLiteralesCadena:
+            ordenarListaPor(lista, compararPorLongitud); //cambiar esto
+            break;
+        case tipoListaPalabrasReservadas:
+        case tipoListaConstantesHexadecimales:
+            while (actual != NULL) {
+                printf("%d: valor entero decimal %d\n", actual->lexema, hexaToDecimal(actual->lexema));
+                actual = actual->siguiente;
+            } 
+            break;
+        case tipoListaConstantesDecimales:
+            while (actual != NULL) {
+                printf("%d: valor: %d", actual->lexema, actual->lexema);
+                actual = actual->siguiente;
+            } 
+            fprintf(stdout, "Total acumulado de sumar todas las constantes decimales: %d ", sumarListaDecimales(lista));
+            break;
+        case tipoListaConstantesOctales:
+            while (actual != NULL) {
+                printf("%d: valor entero decimal %d\n", actual->lexema, octalToDecimal(actual->lexema));
+                actual = actual->siguiente;
+            } 
+            break;
+        case tipoListaConstantesReales:
+        case tipoListaConstantesCaracter: //Orden de aparicion
+        case tipoListaOperadoresYPuntuadores:
+        case tipoListaNoReconocidos:
+    }
+    if(lista->tipo == "EnteroDecimal")
     while (actual != NULL) {
         printf("Token: %s | Tipo: %d | Linea: %d | Columna: %d\n", actual->lexema, actual->tipo, actual->linea, actual->columna);
         actual = actual->siguiente;
     } 
 }
 
-void ordenarAlfabeticamente (NodoToken** lista) {
-    
-    //iteraciones varia entre 0 y 1 cada vez que se inicia el bucle para saber si se cambio algun nodo de lugar en dicha iteracion del bucle
-    int iteraciones;
+
+
+//FUNCIONES PARA CONSTANTES ENTERAS
+int sumarListaDecimales (NodoToken* lista){
+    int suma = 0;
+    NodoToken* actual = lista;
+    while(actual->siguiente != NULL){
+        suma += atof(actual->lexema);
+        actual = actual->siguiente;
+    }
+    return suma;
+}
+
+//Hexadecimales
+//Que garron que no exista esta funcion loco
+int hexADecimal(char c) {
+    if (c >= '0' && c <= '9') return c - '0';        // '0'-'9' → 0-9
+    if (c >= 'A' && c <= 'F') return c - 'A' + 10;   // 'A'-'F' → 10-15
+    if (c >= 'a' && c <= 'f') return c - 'a' + 10;   // 'a'-'f' → 10-15
+    return 0;
+}
+
+int hexaToDecimal (char* lexema){
+    int valorDeci = 0;
+    lexema = lexema + 2;
+    int multiplicador = ((int)strlen(lexema)) - 1;
+    while(lexema && (multiplicador + 1)){
+        valorDeci +=  pow(16, multiplicador) * hexADecimal(lexema[0]);
+        lexema = lexema + 1;
+        multiplicador--;
+    }
+    return valorDeci;
+}
+
+//Octales
+int octADecimal(char c) {
+    if (c >= '0' && c <= '8') return c - '0'; 
+}
+
+int octalToDecimal (char* lexema){
+    int valorDeci = 0;
+    lexema = lexema + 1;
+    int multiplicador = ((int)strlen(lexema)) - 1;
+    while(lexema && (multiplicador + 1)){
+        valorDeci +=  pow(8, multiplicador) * octADecimal(lexema[0]);
+        lexema = lexema + 1;
+        multiplicador--;
+    }
+    return valorDeci;
+}
+
+
+
+//FUNCIONES DE COMPARACION
+
+// Comparación por longitud
+int compararPorLongitud(NodoToken *a, NodoToken *b) {
+    return b->longitud - a->longitud; // descendente: mayor longitud primero
+    // return a->longitud - b->longitud; // ascendente: menor longitud primero
+}
+
+// Comparación alfabética
+int compararAlfabetico(NodoToken *a, NodoToken *b) {
+    return strcasecmp(a->lexema, b->lexema); //si b va antes alfabeticamente que a devuelve un num > 0
+}
+
+
+//OPTIMIZAMOS PARA QUE ORDENAR UNA LISTA RECIBA LA COMPARACION COMO PARAMETRO (corte paradigma funcional)
+void ordenarListaPor(NodoToken **lista, int (*comparar)(NodoToken*, NodoToken*)) {
+    int swapped;
     NodoToken *actual = NULL;
     NodoToken *ant = NULL;
     NodoToken *ultimo = NULL;
-    //primero pongo el bucle despues la condicion, siempre quiero evaluar almenos una vez
-    do{
-        iteraciones = 0;
+
+    do {
+        swapped = 0;
         actual = *lista;
         ant = NULL;
-    
-        while(actual->siguiente != ultimo) {
-            NodoToken *sig = actual->siguiente;
-            // si el siguiente esta primero alfabeticamente
-            if(strcasecmp(actual->lexema, sig->lexema) > 0){
 
+        while (actual->siguiente != ultimo) {
+            NodoToken *sig = actual->siguiente;
+
+            // en vez de la comparación hardcodeada, llamamos al puntero funcion de comparacion
+            if (comparar(actual, sig) > 0) {
                 actual->siguiente = sig->siguiente;
                 sig->siguiente = actual;
-            
-                if(ant == NULL){
-                    // actual sigue siendo el primrer nodo de la lista asi que lo cambio por sig
+                if (ant == NULL) {
                     *lista = sig;
-                }
-                else{
-                    //Si no, reconecto el anterior al siguiente
+                } else {
                     ant->siguiente = sig;
                 }
-
                 ant = sig;
-                iteraciones = 1;
-            }
-            else{
-                // no hubo ningun cambio necesario entre actual y sig asi que avanzo en la lista normalmente
+                swapped = 1;
+            } else {
                 ant = actual;
                 actual = actual->siguiente;
             }
         }
-        //Cuando termina el while de arriba, el actual siempre queda en el ultimo nodo que va a ser siempre el ultimo valor alfabetico, haciendo ultimo == actual hago que termine el while de arriba en el que ya fue ordenado como ultimo definitivo anteriormente. 
         ultimo = actual;
 
-    }while(iteraciones); //si no hubo ninguna iteracion desde el principio, ya venia ordenada y termina todo el bucle
+    } while (swapped);
 }
 
-void ordenarPorLongitud (NodoToken** lista) {
-    //FUNCION A DESARROLLAR
-
-    
-}
 
 //HAY QUE SEGUIR DESARROLLANDO LAS FUNCIONES PARA CADA CASO, LEER CONSIGNA DE TP
+//No hace falta formatear las listas Hexadecimales ni octales
 void darFormatoALista (NodoToken** lista, TipoDeLista tipo) {
     switch (tipo) {
         case tipoListaIdentificadores:
-            ordenarAlfabeticamente(lista);
+            ordenarListaPor(lista, compararAlfabetico);
             break;
         case tipoListaLiteralesCadena:
-            ordenarPorLongitud(lista);
+            ordenarListaPor(lista, compararPorLongitud);
             break;
         case tipoListaPalabrasReservadas:
-        case tipoListaConstantesHexadecimales:
         case tipoListaConstantesDecimales:
-        case tipoListaConstantesOctales:
         case tipoListaConstantesReales:
-        case tipoListaConstantesCaracter:
+        case tipoListaConstantesCaracter: //Orden de aparicion
         case tipoListaOperadoresYPuntuadores:
         case tipoListaNoReconocidos:
     }
