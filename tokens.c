@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "tokens.h"
-#include <math.h>
+
 
 NodoToken* crearNodo (const char* lexema, TipoToken tipo, int linea, int columna)
 {
@@ -75,20 +75,20 @@ void imprimirLista (NodoToken* lista, TipoDeLista tipo) {
         case tipoListaPalabrasReservadas:
         case tipoListaConstantesHexadecimales:
             while (actual != NULL) {
-                printf("%d: valor entero decimal %d\n", actual->lexema, hexaToDecimal(actual->lexema));
+                printf("%s: valor entero decimal %d\n", actual->lexema, strtoul(actual->lexema, NULL, 16));
                 actual = actual->siguiente;
             } 
             break;
         case tipoListaConstantesDecimales:
             while (actual != NULL) {
-                printf("%d: valor: %d", actual->lexema, actual->lexema);
+                printf("%s: valor: %s", actual->lexema, actual->lexema);
                 actual = actual->siguiente;
             } 
             fprintf(stdout, "Total acumulado de sumar todas las constantes decimales: %d ", sumarListaDecimales(lista));
             break;
         case tipoListaConstantesOctales:
             while (actual != NULL) {
-                printf("%d: valor entero decimal %d\n", actual->lexema, octalToDecimal(actual->lexema));
+                printf("%s: valor entero decimal %d\n", actual->lexema, strtoul(actual->lexema, NULL, 8));
                 actual = actual->siguiente;
             } 
             break;
@@ -97,11 +97,11 @@ void imprimirLista (NodoToken* lista, TipoDeLista tipo) {
         case tipoListaOperadoresYPuntuadores:
         case tipoListaNoReconocidos:
     }
-    if(lista->tipo == "EnteroDecimal")
+/*     if(lista->tipo == "EnteroDecimal")
     while (actual != NULL) {
         printf("Token: %s | Tipo: %d | Linea: %d | Columna: %d\n", actual->lexema, actual->tipo, actual->linea, actual->columna);
         actual = actual->siguiente;
-    } 
+    }  */
 }
 
 
@@ -111,50 +111,11 @@ int sumarListaDecimales (NodoToken* lista){
     int suma = 0;
     NodoToken* actual = lista;
     while(actual->siguiente != NULL){
-        suma += atof(actual->lexema);
+        suma += strtof(lista->lexema, NULL);
         actual = actual->siguiente;
     }
     return suma;
 }
-
-//Hexadecimales
-//Que garron que no exista esta funcion loco
-int hexADecimal(char c) {
-    if (c >= '0' && c <= '9') return c - '0';        // '0'-'9' → 0-9
-    if (c >= 'A' && c <= 'F') return c - 'A' + 10;   // 'A'-'F' → 10-15
-    if (c >= 'a' && c <= 'f') return c - 'a' + 10;   // 'a'-'f' → 10-15
-    return 0;
-}
-
-int hexaToDecimal (char* lexema){
-    int valorDeci = 0;
-    lexema = lexema + 2;
-    int multiplicador = ((int)strlen(lexema)) - 1;
-    while(lexema && (multiplicador + 1)){
-        valorDeci +=  pow(16, multiplicador) * hexADecimal(lexema[0]);
-        lexema = lexema + 1;
-        multiplicador--;
-    }
-    return valorDeci;
-}
-
-//Octales
-int octADecimal(char c) {
-    if (c >= '0' && c <= '8') return c - '0'; 
-}
-
-int octalToDecimal (char* lexema){
-    int valorDeci = 0;
-    lexema = lexema + 1;
-    int multiplicador = ((int)strlen(lexema)) - 1;
-    while(lexema && (multiplicador + 1)){
-        valorDeci +=  pow(8, multiplicador) * octADecimal(lexema[0]);
-        lexema = lexema + 1;
-        multiplicador--;
-    }
-    return valorDeci;
-}
-
 
 
 //FUNCIONES DE COMPARACION
@@ -177,7 +138,10 @@ void ordenarListaPor(NodoToken **lista, int (*comparar)(NodoToken*, NodoToken*))
     NodoToken *actual = NULL;
     NodoToken *ant = NULL;
     NodoToken *ultimo = NULL;
-
+    
+    if(*lista = NULL){
+        return;
+    }
     do {
         swapped = 0;
         actual = *lista;
@@ -213,10 +177,10 @@ void ordenarListaPor(NodoToken **lista, int (*comparar)(NodoToken*, NodoToken*))
 void darFormatoALista (NodoToken** lista, TipoDeLista tipo) {
     switch (tipo) {
         case tipoListaIdentificadores:
-            ordenarListaPor(lista, compararAlfabetico);
+            ordenarListaPor(&lista, compararAlfabetico);
             break;
         case tipoListaLiteralesCadena:
-            ordenarListaPor(lista, compararPorLongitud);
+            ordenarListaPor(&lista, compararPorLongitud);
             break;
         case tipoListaPalabrasReservadas:
         case tipoListaConstantesDecimales:
