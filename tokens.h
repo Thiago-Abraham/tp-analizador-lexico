@@ -46,6 +46,7 @@ typedef enum {
     tipoListaNoReconocidos
 } TipoDeLista;
 
+
 typedef struct NodoToken {
     TipoToken tipo;                         
     char* lexema;                         // Puntero al texto del token
@@ -56,6 +57,7 @@ typedef struct NodoToken {
 
     struct NodoToken* siguiente;
 } NodoToken;
+
 
 NodoToken* crearNodo(const char* lexema, TipoToken tipo, int linea, int columna);
 void agregarNodoALista(NodoToken** lista, const char* lexema, TipoToken tipo, int linea, int columna);

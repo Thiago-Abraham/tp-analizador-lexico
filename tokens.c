@@ -67,41 +67,60 @@ void imprimirLista (NodoToken* lista, TipoDeLista tipo) {
     NodoToken* actual = lista;
     switch (tipo) {
         case tipoListaIdentificadores:
-            ordenarListaPor(lista, compararAlfabetico); //cambiar esto
+            while (actual != NULL) {
+                printf("%s: aparece %d veces\n", actual->lexema, actual->contador, actual->contador == 1 ? "vez" : "veces");
+                actual = actual->siguiente;
+            } 
             break;
         case tipoListaLiteralesCadena:
-            ordenarListaPor(lista, compararPorLongitud); //cambiar esto
+            while (actual != NULL) {
+                printf("%s: longitud %zu\n", actual->lexema, actual->longitud);
+                actual = actual->siguiente;
+            } 
             break;
         case tipoListaPalabrasReservadas:
+            
+            break;
         case tipoListaConstantesHexadecimales:
             while (actual != NULL) {
-                printf("%s: valor entero decimal %d\n", actual->lexema, strtoul(actual->lexema, NULL, 16));
+                printf("%s: valor entero Hexadecimal %d\n", actual->lexema, strtoul(actual->lexema, NULL, 16));
                 actual = actual->siguiente;
             } 
             break;
         case tipoListaConstantesDecimales:
             while (actual != NULL) {
-                printf("%s: valor: %s", actual->lexema, actual->lexema);
+                printf("%s: valor entero Decimal: %s", actual->lexema, actual->lexema);
                 actual = actual->siguiente;
             } 
             fprintf(stdout, "Total acumulado de sumar todas las constantes decimales: %d ", sumarListaDecimales(lista));
             break;
         case tipoListaConstantesOctales:
             while (actual != NULL) {
-                printf("%s: valor entero decimal %d\n", actual->lexema, strtoul(actual->lexema, NULL, 8));
+                printf("%s: valor entero Octal %d\n", actual->lexema, strtoul(actual->lexema, NULL, 8));
                 actual = actual->siguiente;
             } 
             break;
         case tipoListaConstantesReales:
+            while (actual != NULL) {
+                float entera = retornarParteEntera (actual);
+                float mantisa = retornarMantisa (actual);
+                printf("%s: parte entera %g, mantisa %g\n", actual->lexema, entera, mantisa);
+                actual = actual->siguiente;
+            } 
         case tipoListaConstantesCaracter: //Orden de aparicion
         case tipoListaOperadoresYPuntuadores:
-        case tipoListaNoReconocidos:
+            while (actual != NULL) {
+                printf("%s: aparece %d veces\n", actual->lexema, actual->contador, actual->contador == 1 ? "vez" : "veces");
+                actual = actual->siguiente;
+            } 
+            break;
+        case tipoListaNoReconocidos: 
+            while (actual != NULL) {
+                printf("%s: linea %d, columna %d\n", actual->lexema, actual->linea, actual->columna);
+                actual = actual->siguiente;
+            }
+            break; 
     }
-/*     if(lista->tipo == "EnteroDecimal")
-    while (actual != NULL) {
-        printf("Token: %s | Tipo: %d | Linea: %d | Columna: %d\n", actual->lexema, actual->tipo, actual->linea, actual->columna);
-        actual = actual->siguiente;
-    }  */
 }
 
 
@@ -122,8 +141,8 @@ int sumarListaDecimales (NodoToken* lista){
 
 // Comparación por longitud
 int compararPorLongitud(NodoToken *a, NodoToken *b) {
-    return b->longitud - a->longitud; // descendente: mayor longitud primero
-    // return a->longitud - b->longitud; // ascendente: menor longitud primero
+    return a->longitud - b->longitud; // ascendente: menor longitud primero
+    // return b->longitud - a->longitud; // descendente: mayor longitud primero
 }
 
 // Comparación alfabética
@@ -139,7 +158,7 @@ void ordenarListaPor(NodoToken **lista, int (*comparar)(NodoToken*, NodoToken*))
     NodoToken *ant = NULL;
     NodoToken *ultimo = NULL;
     
-    if(*lista = NULL){
+    if(*lista == NULL){
         return;
     }
     do {
@@ -172,9 +191,68 @@ void ordenarListaPor(NodoToken **lista, int (*comparar)(NodoToken*, NodoToken*))
 }
 
 
+// Operadores y Caracteres de Puntuacion
+void ordenPrimeraAparicion (NodoToken** lista){
+    if(lista == NULL){
+        return;
+    }
+    
+    NodoToken* tokensRecibidos = NULL;
+    NodoToken* listaFormateada = NULL;
+    NodoToken* actual = *lista;
+    NodoToken* sig = actual->siguiente;
+    char* tokenActual;
+
+    while(actual->siguiente){
+        if(actual->contador > 1){
+            agregarNodoALista(&tokensRecibidos,actual->lexema,actual->tipo, actual->linea,actual->columna);
+        }
+        actual = actual->siguiente;
+    }
+
+    actual = *lista;
+
+    while(actual){
+        if(!yaExisteEnLista(tokensRecibidos, actual->lexema)){
+            agregarNodoALista(&listaFormateada, actual->lexema, actual->tipo, actual->linea, actual->columna);
+        }
+        actual = actual->siguiente;
+    }
+
+    *lista = listaFormateada;
+    return;
+}
+
+
+int yaExisteEnLista(NodoToken* lista, const char* lexema) {
+    NodoToken* actual = lista;
+    while (actual != NULL) {
+        // Usamos strcmp para comparar cadenas de texto de manera segura
+        if (strcmp(actual->lexema, lexema) == 0) {
+            return 1; // Ya existe
+        }
+        actual = actual->siguiente;
+    }
+    return 0; // No existe
+}
+
+
+
+
+//Retornar parte entera
+float retornarParteEntera (NodoToken* Lista){
+    int entero = (int) atof(Lista->lexema); // hace atof al lista lexema lo que hace que funcione como numero (float en este caso) y lo convierte a int para quedarse solo con la parte entera
+    return (float)entero; // returnea l parte entera ya obtenida trasnformada en float,es decir entero.0000..... 
+}
+
+//Retornar mantisa
+float retornarMantisa (NodoToken* Lista){
+    float mantisa = atof(Lista->lexema) - retornarParteEntera(Lista); // hace atof al lexema para que deje de ser char y leresta la parte entera transformada en float usando la funcion anterior
+    return mantisa; //returnea 
+}
 //HAY QUE SEGUIR DESARROLLANDO LAS FUNCIONES PARA CADA CASO, LEER CONSIGNA DE TP
 //No hace falta formatear las listas Hexadecimales ni octales
-void darFormatoALista (NodoToken** lista, TipoDeLista tipo) {
+void darFormatoALista (NodoToken** lista, TipoDeLista tipo){
     switch (tipo) {
         case tipoListaIdentificadores:
             ordenarListaPor(&lista, compararAlfabetico);
@@ -182,11 +260,121 @@ void darFormatoALista (NodoToken** lista, TipoDeLista tipo) {
         case tipoListaLiteralesCadena:
             ordenarListaPor(&lista, compararPorLongitud);
             break;
+        //Orden de llegada
         case tipoListaPalabrasReservadas:
+            break;
+        //Orden de llegada
         case tipoListaConstantesDecimales:
+            break;
+        //Orden de llegada
         case tipoListaConstantesReales:
+            break;
         case tipoListaConstantesCaracter: //Orden de aparicion
-        case tipoListaOperadoresYPuntuadores:
+            
+        case tipoListaOperadoresYPuntuadores:  
+            break;    
+            
         case tipoListaNoReconocidos:
+            break; 
     }
 }
+
+/* NO TOCAR, EL QUE TOCA SE LA COME
+⣿⣿⣿⣿⣿⠟⠋⠄⠄⠄⠄⠄⠄⠄⢁⠈⢻⢿⣿⣿⣿⣿⣿⣿⣿ 
+⣿⣿⣿⣿⣿⠃⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠈⡀⠭⢿⣿⣿⣿⣿ 
+⣿⣿⣿⣿⡟⠄⢀⣾⣿⣿⣿⣷⣶⣿⣷⣶⣶⡆⠄⠄⠄⣿⣿⣿⣿ 
+⣿⣿⣿⣿⡇⢀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠄⠄⢸⣿⣿⣿⣿ 
+⣿⣿⣿⣿⣇⣼⣿⣿⠿⠶⠙⣿⡟⠡⣴⣿⣽⣿⣧⠄⢸⣿⣿⣿⣿ 
+⣿⣿⣿⣿⣿⣾⣿⣿⣟⣭⣾⣿⣷⣶⣶⣴⣶⣿⣿⢄⣿⣿⣿⣿⣿ 
+⣿⣿⣿⣿⣿⣿⣿⣿⡟⣩⣿⣿⣿⡏⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿ 
+⣿⣿⣿⣿⣿⣿⣹⡋⠘⠷⣦⣀⣠⡶⠁⠈⠁⠄⣿⣿⣿⣿⣿⣿⣿ 
+⣿⣿⣿⣿⣿⣿⣍⠃⣴⣶⡔⠒⠄⣠⢀⠄⠄⠄⡨⣿⣿⣿⣿⣿⣿ 
+⣿⣿⣿⣿⣿⣿⣿⣦⡘⠿⣷⣿⠿⠟⠃⠄⠄⣠⡇⠈⠻⣿⣿⣿⣿ 
+⣿⣿⣿⣿⡿⠟⠋⢁⣷⣠⠄⠄⠄⠄⣀⣠⣾⡟⠄⠄⠄⠄⠉⠙⠻ 
+⡿⠟⠋⠁⠄⠄⠄⢸⣿⣿⡯⢓⣴⣾⣿⣿⡟⠄⠄⠄⠄⠄⠄⠄⠄ 
+⠄⠄⠄⠄⠄⠄⠄⣿⡟⣷⠄⠹⣿⣿⣿⡿⠁⠄⠄⠄⠄⠄⠄⠄⠄ 
+
+ATTENTION CITIZEN! 市民请注意!
+
+This is the Central Intelligentsia of the Chinese Communist Party.
+ 您的 Internet 浏览器历史记录和活动引起了我们的注意。 
+ YOUR INTERNET ACTIVITY HAS ATTRACTED OUR ATTENTION. 
+ 因此，您的个人资料中的 11115 ( -11115 Social Credits) 个社会积分将打折。
+ DO NOT DO THIS AGAIN! 不要再这样做! If you do not hesitate, more Social Credits ( -11115 Social Credits )will be subtracted from your profile, 
+ resulting in the subtraction of ration supplies.
+ (由人民供应部重新分配 CCP) You'll also be sent into a re-education camp in the Xinjiang Uyghur Autonomous Zone.
+ 如果您毫不犹豫，更多的社会信用将从您的个人资料中打折，从而导致口粮供应减少。 
+ 您还将被送到新疆维吾尔自治区的再教育营。
+
+为党争光! Glory to the CCP!
+
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⣧⠞⢻⡅⠀⠀⢀⣷⡆⠈⡙⢶⡄⠐⠂⠀⠒⠂⠀⠈⠉⠉⠉⡍⠙⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢫⡞⠁⣰⣿⣿⣄⣼⣿⡛⣷⠀⠈⠈⣷⡄⢀⣩⡐⠶⣄⡀⠂⠀⠀⠀⠀⠀⠈⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡟⠀⣸⣿⠛⣿⣿⡿⠛⡇⢸⣆⠀⠀⢸⣿⠰⠤⠜⠳⠁⢶⡄⠂⠀⠆⠀⠀⠀⠀⠈⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠋⣿⠀⣰⣿⡟⠀⠘⠟⠀⠀⢿⡌⢻⣆⠀⣾⣋⣸⠶⠀⣤⣀⣒⣠⡐⢀⠀⠀⡤⡀⠀⠀⠀⠘⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠁⡀⣿⡀⣿⣿⠃⠀⠀⠀⠀⠀⠘⣷⡾⠋⣴⡟⣮⣽⡛⢩⡉⢡⡽⢂⠓⠈⠀⣀⠠⢉⡀⠉⠀⠀⠈⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠇⠘⠂⠛⢧⣌⣃⣀⣀⣀⣀⣀⣀⣀⠉⣀⣼⣿⣶⣭⠆⣡⢈⡁⡄⣴⡛⠀⠀⠀⠥⠂⠨⡽⣦⠀⠀⠀⠀⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⢿⣿⣭⣿⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣭⣭⣉⠉⠉⠉⠉⠛⠿⣷⣮⣉⠉⣈⠙⠯⠹⠊⠀⠿⠴⠀⠈⠛⠀⠀⠀⠀⠘⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⡿⣫⣾⢿⣿⣿⣿⣿⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣤⣀⠀⠀⠈⠙⠿⣷⣜⣊⡹⡗⣟⠐⠀⠸⠶⠄⠁⠀⠀⠀⣀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣤⡀⠀⠀⠙⠿⣿⣇⠛⢶⡆⡀⠀⠻⠄⠀⠀⠀⠈⠀⠈⢻⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⠛⠉⠉⠁⠀⠀⠀⠀⠀⠀⢉⣭⣿⣿⣿⣿⣿⣿⣿⣷⣦⣄⠀⠈⠻⢿⣭⣙⣧⣜⣀⡠⢈⠀⠀⠀⠀⠈⢷⠻⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡆⠀⠀⠀⠀⠀⠀⠀⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⡍⠛⠿⢷⣶⣄⡀⠙⢿⣿⣮⣁⡰⠀⡌⠐⠀⠀⠀⠁⠀⠈⠟⢿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠋⠻⣿⣷⠀⠀⠀⠀⠀⠀⠠⣼⣿⡿⠋⠉⠀⠀⠈⠙⢿⣿⣇⠀⠀⠀⠉⠛⢿⣶⣄⠙⠷⣿⣿⣞⠓⢖⡀⠄⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠈⣋⢻⡂⠀⠀⠀⠀⠀⠠⠟⠁⠀⣀⣀⣀⡀⠀⠀⠙⠿⠿⠄⠀⠀⠀⠀⠀⠉⠻⣿⣾⣟⣹⣿⣷⣿⣟⣋⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⡴⢋⣋⣛⡆⠀⠀⠀⠀⠀⠀⢀⣴⣟⣁⡀⠀⠉⠳⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⣿⣿⣿⣿⣻⣿⣜⣉⣉⠀⠀⢀⠛⡄⠀⠀⢸⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⢸⠁⣾⣯⣽⣿⡆⠀⠀⠀⠀⠀⣾⣿⣿⡿⢻⣆⠀⠀⠹⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣽⣿⣿⡖⣢⣄⠀⠁⠀⠀⢸⣿
+⣿⣿⣿⣿⣿⣿⣿⢿⣿⣿⠿⠛⠋⠀⠘⠘⠻⠻⡻⣿⡁⠀⠀⠀⠀⢰⣿⣿⣍⣿⡆⢹⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⣿⣿⣯⣩⣿⣿⣿⣿⣿⣿⣾⡇⡉⠁⠂⠀⠀⣾⣿
+⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠀⠀⠀⠀⣼⢻⣿⣿⣿⠇⢸⠀⠀⠀⣧⠀⠀⠀⠀⠀⠀⠀⢠⣾⣿⢛⡿⣿⣿⣿⣿⢿⣿⠿⠟⠛⠛⠷⠶⣦⣄⣸⣿⣿
+⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡿⡜⠿⠿⠟⢠⡞⠀⠀⢰⢣⡀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣴⣠⣸⡿⣿⣿⡿⠁⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿
+⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢟⣲⠤⠖⠋⠀⠀⣄⣫⣼⣷⠀⠀⠀⠀⠀⠀⠈⢿⣿⣿⣿⣿⢻⣿⡿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⣿
+⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣈⣁⣤⣤⣶⣾⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⢹⣿⠙⢳⣺⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿
+⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠸⣿⣿⣿⣿⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣽
+⣿⣿⣿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣿⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⣤⣤⣤⣤⣤⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣷⡉⠉⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠻⢿⣿⠿⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣧⡀⠀⠀⠀⠀⠀⣀⣴⣾⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣼⢿⣷⠀⠀⠀⠉⠙⠯⣅⣉⣙⣛⣋⣉⣀⣀⣠⠤⠖⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣿⣿⣷⣶⣶⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣽⣿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣴⣿⣿⣿⣿⣿⣿⣿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⣶⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡶⠛⣦⣀⣀⣀⣀⣀⣀⣀⣠⡤⠶⠶⠖⣛⣽⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⣿⣿⣿⣿⡿⢠⣾⠛⠋⠙⠋⢻⣿⡀⠀⠀⠀⢀⣤⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣿⣿⣿⣿⡿⢇⠟⠁⠀⠀⠀⢠⣴⢿⡇⢀⣠⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+
+
+
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣶⣶⣶⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠟⠛⢿⣿⡿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⢀⡴⠚⢉⣷⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣷⣿⣿⣿⣿⣷⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⡞⠀⠀⠀⢿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⡟⠟⢡⢉⠣⣿⣿⣿⣿⣿⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⢧⠀⠀⠀⢸⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣾⣿⣣⠖⠱⠛⠙⣿⣿⣿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⢿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣾⣿⢉⠟⢃⠞⠐⠋⢼⢹⣿⣿⣿⣿⣿⣿⣿⣷⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⢰⠀⠀⠀⠸⣿⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣯⡥⠴⣯⡀⠀⡐⢰⡵⣃⣮⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⡼⠀⠀⠀⠀⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⢯⡟⠀⠀⠈⠙⢶⡷⠂⠀⠿⣽⣿⣿⣿⠟⠋⠀⢠⣿⣿⣿⡆⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⣠⠃⠀⠀⠀⠀⠈⢿⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⠉⣇⠀⠀⠀⠀⠙⠳⠶⠤⠾⠟⠋⠀⠀⠀⣀⣾⣿⣿⣿⣷⣀⣀⣀⣀⠀⠀⠀⠀
+⠀⠀⣀⣤⣒⣋⣀⣀⣀⣀⣀⣀⡀⠈⢻⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡤⠶⣿⣿⡀⢹⣦⣄⡀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣴⣿⣿⣿⢏⣿⣿⣿⣿⣿⣿⣿⣿⣶⣶⣶
+⢀⡞⠁⠀⠀⠁⠀⠀⠈⠀⠀⠀⠹⡆⠀⣿⣤⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⡀⠀⢿⣿⡇⠘⣿⣿⠟⢓⣒⡛⢷⣶⠾⢛⣛⠛⢿⣿⣿⡏⣸⣿⣿⡏⠀⢸⣿⣿⠟⠋⢉⠐
+⠸⣷⣤⣤⣄⠀⠀⣠⠄⠀⡀⣤⣾⣿⣾⣿⣿⣿⣿⣶⣤⣀⡀⠀⠀⠀⠀⢀⣠⣴⡇⠀⠘⣿⣿⡄⢻⡇⠀⢿⣿⡿⢸⣿⣀⣿⣿⡷⠀⣿⡿⣰⣿⣿⣿⠀⢰⣿⣿⡏⠀⠀⢀⠀
+⢀⡟⠉⠉⠙⠓⠚⠛⠓⠒⠚⠋⠉⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣤⣠⣶⣿⢿⣧⣿⠀⠀⠘⢿⣿⣄⡿⠒⠒⠉⠀⠀⠀⠈⠉⠙⠲⢾⣿⣷⣿⣿⣿⠃⢀⣿⣿⣿⠀⠂⠄⠠⠀
+⢸⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠊⠈⠻⣿⡷⠞⠋⠁⠀⠀⠀⠀⢾⣷⠀⠀⣴⠿⠆⠀⠀⠀⠀⠙⠿⣧⣴⣾⣿⣿⡿⣐⡂⠓⠟⠀
+⠈⡿⠷⠶⢶⣶⣦⣤⣶⣾⣷⣿⡿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⣼⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠋⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⣿⣿⣷⣿⠇⠀⠁⠁
+⠀⡇⠀⠀⠀⠀⠀⠈⠉⠉⠉⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡷⢳⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⢏⠀⠠⠄⠀
+⠀⢿⣆⣀⡀⣀⠀⠀⠀⣠⣤⣠⣠⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⠀⣿⠲⣤⣀⣀⣀⣀⣀⣀⣀⣀⣀⡀⢀⣀⣀⣀⣀⣀⣀⣀⣀⣴⣦⣾⣿⣿⣿⣿⢇⠀⠁⠀⠀
+⠀⢸⠀⠉⠉⠙⠛⠻⠿⠿⠿⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣿⣧⠻⣍⠛⡛⠿⡿⠛⢛⠛⠛⢛⡛⠛⠛⣿⣿⣿⡿⢿⣿⣿⣿⣿⣿⣿⣿⣿⢩⡱⢀⠀⠁
+⠀⠸⣄⠀⠀⠀⠀⠀⢀⠀⢀⣠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣎⢧⠙⠲⢧⣀⣇⠀⢸⠀⠀⠐⠀⠀⠀⡇⠀⢸⣀⣸⠾⣛⣽⣿⡿⠋⢻⣿⣿⣤⠌⢰⠄
+⠀⠀⠈⠉⠙⠓⠒⠛⢛⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣄⠙⠲⢤⣀⣀⠉⠉⠉⠓⠚⠓⠒⠊⠉⢉⣉⣤⣶⣿⣿⣿⣿⠃⠀⠸⣿⣿⣿⡀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠻⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣀⠀⠀⠉⠙⠛⠛⠿⢶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠃⠀⠀⠀⡙⢿⣿⡧⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠛⣿⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣁⣀⣀⣠⣴⣾⡷⢠⡿⠁⠁⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠛⠻⠿⣿⠿⠿⠛⠛⠋⠁⠀⠀⠀⠈⠳⣄⠀⠉⠙⠛⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣴⠟⡡⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠓⠦⢤⣼⠋⠙⠻⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠃⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡼⠃⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⡴⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡞⠡⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠃⡤⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣰⡞⠳⣝⢦⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡟⠡⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⢋⣤⡀⣸⣾⣏⡳⣤⣰⣿⣿⣿⣿⣿⣿⣿⣿⡛⠉⠉⢹⣟⢧⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢴⢞⣿⡟⣱⣛⠞⣱⠟⢁⣼⠟⣦⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⣾⣯⣟⡀⢀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡻⢯⣀⣠⣴⠞⠁⠀⣉⡤⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣸⣿⣿⣧⣼⡀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⡏⣓⣲⡺⣧⣶⠃⣸⣿⣋⣽⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⢸⣿⡿⢿⠿⡿⠠⡄⠀
+
+
+*/

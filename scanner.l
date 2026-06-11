@@ -82,7 +82,7 @@ reservadaDeStructUnion                       (struct|union)
 reservadaDeEnumeracion                       (enum)
 reservadaEtiqueta                            (case|default)
 reservadaSeleccion                           (if|else|switch)
-reservadaDeIteracion                         (do|while|for)
+reservadaDeIteracion                         (do|while|for)  
 reservadaSalto                               (goto|continue|break|return) 
 reservadaUnario                              (sizeof)
 identifier                                   {nondigit}({nondigit}|{digit})*
@@ -120,7 +120,7 @@ void imprimirListaFormateada () {
     if (listaIdentificadores == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaIdentificadores, tipoListaIdentificadores);
+        darFormatoALista(&listaIdentificadores, tipoListaIdentificadores);
         imprimirLista(listaIdentificadores);
         liberarLista(listaIdentificadores);
 
