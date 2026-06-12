@@ -2,67 +2,67 @@
 #define TOKENS_H
 
 typedef enum {
-tokenTabulacion,
-tokenSaltoDeLinea,                          
-tokenNondigit,
-tokenConstanteCaracter,
-tokenLiteralesCadena,
-tokenDigit,
-tokenDecimal,
-tokenOctalDigit,
-tokenOctal,
-tokenHexaDigit,
-tokenHexadecimal,
-tokenRealPuntoInicial,
-tokenRealConPunto,
-tokenRealSoloExponencial,
-tokenReal,
-tokenOperators,
-tokenPunctuators,
-tokenReservadaEspecificadorAlmacenamiento,
-tokenReservadaEspecificadorTipo,
-tokenReservadaDeCalificadoresDeTipo,
-tokenReservadaDeStructUnion,
-tokenReservadaDeEnumeracion,
-tokenReservadaEtiqueta,
-tokenReservadaSeleccion,
-tokenReservadaDeIteracion,
-tokenReservadaSalto,
-tokenReservadaUnario,
-tokenIdentifier,
-tokenNoReconocido   
+  tokenTabulacion,
+  tokenSaltoDeLinea,
+  tokenNondigit,
+  tokenConstanteCaracter,
+  tokenLiteralesCadena,
+  tokenDigit,
+  tokenDecimal,
+  tokenOctalDigit,
+  tokenOctal,
+  tokenHexaDigit,
+  tokenHexadecimal,
+  tokenRealPuntoInicial,
+  tokenRealConPunto,
+  tokenRealSoloExponencial,
+  tokenReal,
+  tokenOperators,
+  tokenPunctuators,
+  tokenReservadaEspecificadorAlmacenamiento,
+  tokenReservadaEspecificadorTipo,
+  tokenReservadaDeCalificadoresDeTipo,
+  tokenReservadaDeStructUnion,
+  tokenReservadaDeEnumeracion,
+  tokenReservadaEtiqueta,
+  tokenReservadaSeleccion,
+  tokenReservadaDeIteracion,
+  tokenReservadaSalto,
+  tokenReservadaUnario,
+  tokenIdentifier,
+  tokenNoReconocido
 } TipoToken;
 
 typedef enum {
-    tipoListaIdentificadores,
-    tipoListaLiteralesCadena,
-    tipoListaPalabrasReservadas,
-    tipoListaConstantesDecimales,
-    tipoListaConstantesHexadecimales,
-    tipoListaConstantesOctales,
-    tipoListaConstantesReales,
-    tipoListaConstantesCaracter,
-    tipoListaOperadoresYPuntuadores,
-    tipoListaNoReconocidos
+  tipoListaIdentificadores,
+  tipoListaLiteralesCadena,
+  tipoListaPalabrasReservadas,
+  tipoListaConstantesDecimales,
+  tipoListaConstantesHexadecimales,
+  tipoListaConstantesOctales,
+  tipoListaConstantesReales,
+  tipoListaConstantesCaracter,
+  tipoListaOperadoresYPuntuadores,
+  tipoListaNoReconocidos
 } TipoDeLista;
 
-
 typedef struct NodoToken {
-    TipoToken tipo;                         
-    char* lexema;                         // Puntero al texto del token
-    int contador;
-    size_t longitud;
-    int linea;
-    int columna;
+  TipoToken tipo;
+  char* lexema;  // Puntero al texto del token
+  int contador;
+  size_t longitud;
+  int linea;
+  int columna;
 
-    struct NodoToken* siguiente;
+  struct NodoToken* siguiente;
 } NodoToken;
 
-
-NodoToken* crearNodo(const char* lexema, TipoToken tipo, int linea, int columna);
-void agregarNodoALista(NodoToken** lista, const char* lexema, TipoToken tipo, TipoDeLista tipoLista, int linea, int columna);
+NodoToken* crearNodo(const char* lexema, TipoToken tipo, int linea,
+                     int columna);
+void agregarNodoALista(NodoToken** lista, const char* lexema, TipoToken tipo,
+                       TipoDeLista tipoLista, int linea, int columna);
 void liberarLista(NodoToken** lista);
 void imprimirLista(NodoToken* lista, TipoDeLista tipo);
 void darFormatoALista(NodoToken** lista, TipoDeLista tipo);
 
-#endif // TOKENS_H 
+#endif  // TOKENS_H
