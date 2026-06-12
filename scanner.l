@@ -42,15 +42,13 @@ void imprimirReporte(const char *mensaje, const char *lexema, TipoToken tipo, No
         fprintf(stderr, COLOR_VERDE "[DEBUG] %s: %s: linea %d, columna %d" COLOR_RESET "\n", mensaje, lexema, linea, columna);
     } else {
         /*esto luego deberia ser la funcion de imprimir reporte que da todo el formato*/
-        agregarNodoALista(lista, lexema, tipo, linea, columna);
+        agregarNodoALista(lista, lexema, tipo, tipoLista, linea, columna);
         //fprintf(stdout, "%s: %s: linea %d, columna %d\n", mensaje, lexema, linea, columna);
     }
 }
 
 int tokens_reconocidos = 0;
 int tokens_no_reconocidos = 0;
-
-int largo = 0;
 
 %}
 
@@ -121,8 +119,8 @@ void imprimirListaFormateada () {
         fprintf(stdout, "-\n");
     } else {
         darFormatoALista(&listaIdentificadores, tipoListaIdentificadores);
-        imprimirLista(listaIdentificadores);
-        liberarLista(listaIdentificadores);
+        imprimirLista(listaIdentificadores, tipoListaIdentificadores);
+        liberarLista(&listaIdentificadores);
 
     }
     
@@ -130,9 +128,9 @@ void imprimirListaFormateada () {
     if (listaLiteralesCadena == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaLiteralesCadena, tipoListaLiteralesCadena);
-        imprimirLista(listaLiteralesCadena);
-        liberarLista(listaLiteralesCadena);
+        darFormatoALista(&listaLiteralesCadena, tipoListaLiteralesCadena);
+        imprimirLista(listaLiteralesCadena, tipoListaLiteralesCadena);
+        liberarLista(&listaLiteralesCadena);
 
     }
     
@@ -140,9 +138,9 @@ void imprimirListaFormateada () {
     if (listaReservadaAlmacenamiento == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaReservadaAlmacenamiento, tipoListaPalabrasReservadas);
-        imprimirLista(listaReservadaAlmacenamiento);
-        liberarLista(listaReservadaAlmacenamiento);
+        darFormatoALista(&listaReservadaAlmacenamiento, tipoListaPalabrasReservadas);
+        imprimirLista(listaReservadaAlmacenamiento, tipoListaPalabrasReservadas);
+        liberarLista(&listaReservadaAlmacenamiento);
 
     }
     
@@ -150,9 +148,9 @@ void imprimirListaFormateada () {
     if (listaReservadaTipo == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaReservadaTipo, tipoListaPalabrasReservadas);
-        imprimirLista(listaReservadaTipo);
-        liberarLista(listaReservadaTipo);
+        darFormatoALista(&listaReservadaTipo, tipoListaPalabrasReservadas);
+        imprimirLista(listaReservadaTipo, tipoListaPalabrasReservadas);
+        liberarLista(&listaReservadaTipo);
 
     }
     
@@ -160,9 +158,9 @@ void imprimirListaFormateada () {
     if (listaReservadaCalificadores == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaReservadaCalificadores, tipoListaPalabrasReservadas);
-        imprimirLista(listaReservadaCalificadores);
-        liberarLista(listaReservadaCalificadores);
+        darFormatoALista(&listaReservadaCalificadores, tipoListaPalabrasReservadas);
+        imprimirLista(listaReservadaCalificadores, tipoListaPalabrasReservadas);
+        liberarLista(&listaReservadaCalificadores);
 
     }
     
@@ -170,9 +168,9 @@ void imprimirListaFormateada () {
     if (listaReservadaStructUnion == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaReservadaStructUnion, tipoListaPalabrasReservadas);
-        imprimirLista(listaReservadaStructUnion);
-        liberarLista(listaReservadaStructUnion);
+        darFormatoALista(&listaReservadaStructUnion, tipoListaPalabrasReservadas);
+        imprimirLista(listaReservadaStructUnion, tipoListaPalabrasReservadas);
+        liberarLista(&listaReservadaStructUnion);
 
     }
     
@@ -180,9 +178,9 @@ void imprimirListaFormateada () {
     if (listaReservadaEnumeracion == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaReservadaEnumeracion, tipoListaPalabrasReservadas);
-        imprimirLista(listaReservadaEnumeracion);
-        liberarLista(listaReservadaEnumeracion);
+        darFormatoALista(&listaReservadaEnumeracion, tipoListaPalabrasReservadas);
+        imprimirLista(listaReservadaEnumeracion, tipoListaPalabrasReservadas);
+        liberarLista(&listaReservadaEnumeracion);
 
     }
     
@@ -190,9 +188,9 @@ void imprimirListaFormateada () {
     if (listaReservadaEtiqueta == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaReservadaEtiqueta, tipoListaPalabrasReservadas);
-        imprimirLista(listaReservadaEtiqueta);
-        liberarLista(listaReservadaEtiqueta);
+        darFormatoALista(&listaReservadaEtiqueta, tipoListaPalabrasReservadas);
+        imprimirLista(listaReservadaEtiqueta, tipoListaPalabrasReservadas);
+        liberarLista(&listaReservadaEtiqueta);
 
     }
     
@@ -200,9 +198,9 @@ void imprimirListaFormateada () {
     if (listaReservadaSeleccion == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaReservadaSeleccion, tipoListaPalabrasReservadas);
-        imprimirLista(listaReservadaSeleccion);
-        liberarLista(listaReservadaSeleccion);
+        darFormatoALista(&listaReservadaSeleccion, tipoListaPalabrasReservadas);
+        imprimirLista(listaReservadaSeleccion, tipoListaPalabrasReservadas);
+        liberarLista(&listaReservadaSeleccion);
 
     }
     
@@ -210,9 +208,9 @@ void imprimirListaFormateada () {
     if (listaReservadaIteracion == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaReservadaIteracion, tipoListaPalabrasReservadas);
-        imprimirLista(listaReservadaIteracion);
-        liberarLista(listaReservadaIteracion);
+        darFormatoALista(&listaReservadaIteracion, tipoListaPalabrasReservadas);
+        imprimirLista(listaReservadaIteracion, tipoListaPalabrasReservadas);
+        liberarLista(&listaReservadaIteracion);
 
     }
     
@@ -220,9 +218,9 @@ void imprimirListaFormateada () {
     if (listaReservadaSalto == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaReservadaSalto, tipoListaPalabrasReservadas);
-        imprimirLista(listaReservadaSalto);
-        liberarLista(listaReservadaSalto);
+        darFormatoALista(&listaReservadaSalto, tipoListaPalabrasReservadas);
+        imprimirLista(listaReservadaSalto, tipoListaPalabrasReservadas);
+        liberarLista(&listaReservadaSalto);
 
     }
     
@@ -230,9 +228,9 @@ void imprimirListaFormateada () {
     if (listaReservadaUnario == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaReservadaUnario, tipoListaPalabrasReservadas);
-        imprimirLista(listaReservadaUnario);
-        liberarLista(listaReservadaUnario);
+        darFormatoALista(&listaReservadaUnario, tipoListaPalabrasReservadas);
+        imprimirLista(listaReservadaUnario, tipoListaPalabrasReservadas);
+        liberarLista(&listaReservadaUnario);
 
     }
     
@@ -240,9 +238,9 @@ void imprimirListaFormateada () {
     if (listaConstantesDecimales == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaConstantesDecimales, tipoListaConstantesDecimales);
+        darFormatoALista(&listaConstantesDecimales, tipoListaConstantesDecimales);
         imprimirLista(listaConstantesDecimales, tipoListaConstantesDecimales);
-        liberarLista(listaConstantesDecimales);
+        liberarLista(&listaConstantesDecimales);
 
     }
     
@@ -250,9 +248,9 @@ void imprimirListaFormateada () {
     if (listaConstantesHexadecimales == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaConstantesHexadecimales, tipoListaConstantesHexadecimales);
-        imprimirLista(listaConstantesHexadecimales);
-        liberarLista(listaConstantesHexadecimales);
+        darFormatoALista(&listaConstantesHexadecimales, tipoListaConstantesHexadecimales);
+        imprimirLista(listaConstantesHexadecimales, tipoListaConstantesHexadecimales);
+        liberarLista(&listaConstantesHexadecimales);
 
     }
     
@@ -260,9 +258,9 @@ void imprimirListaFormateada () {
     if (listaConstantesOctales == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaConstantesOctales, tipoListaConstantesOctales);
-        imprimirLista(listaConstantesOctales);
-        liberarLista(listaConstantesOctales);
+        darFormatoALista(&listaConstantesOctales, tipoListaConstantesOctales);
+        imprimirLista(listaConstantesOctales, tipoListaConstantesOctales);
+        liberarLista(&listaConstantesOctales);
 
     }
     
@@ -270,9 +268,9 @@ void imprimirListaFormateada () {
     if (listaConstantesReales == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaConstantesReales, tipoListaConstantesReales);
-        imprimirLista(listaConstantesReales);
-        liberarLista(listaConstantesReales);
+        darFormatoALista(&listaConstantesReales, tipoListaConstantesReales);
+        imprimirLista(listaConstantesReales, tipoListaConstantesReales);
+        liberarLista(&listaConstantesReales);
 
     }
     
@@ -280,9 +278,9 @@ void imprimirListaFormateada () {
     if (listaConstantesCaracter == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaConstantesCaracter, tipoListaConstantesCaracter);
-        imprimirLista(listaConstantesCaracter);
-        liberarLista(listaConstantesCaracter);
+        darFormatoALista(&listaConstantesCaracter, tipoListaConstantesCaracter);
+        imprimirLista(listaConstantesCaracter, tipoListaConstantesCaracter);
+        liberarLista(&listaConstantesCaracter);
 
     }
     
@@ -290,9 +288,9 @@ void imprimirListaFormateada () {
     if (listaOperadoresYPuntuadores == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaOperadoresYPuntuadores, tipoListaOperadoresYPuntuadores);
-        imprimirLista(listaOperadoresYPuntuadores);
-        liberarLista(listaOperadoresYPuntuadores);
+        darFormatoALista(&listaOperadoresYPuntuadores, tipoListaOperadoresYPuntuadores);
+        imprimirLista(listaOperadoresYPuntuadores, tipoListaOperadoresYPuntuadores);
+        liberarLista(&listaOperadoresYPuntuadores);
 
     }
     
@@ -300,11 +298,11 @@ void imprimirListaFormateada () {
     if (listaNoReconocidos == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaNoReconocidos, tipoListaNoReconocidos);
-        imprimirLista(listaNoReconocidos);
-        liberarLista(listaNoReconocidos);
-}
+        darFormatoALista(&listaNoReconocidos, tipoListaNoReconocidos);
+        imprimirLista(listaNoReconocidos, tipoListaNoReconocidos);
+        liberarLista(&listaNoReconocidos);
     }
+}
     
 
 // argc cantidad de parametros, argv[] lista con contenido de los parametros

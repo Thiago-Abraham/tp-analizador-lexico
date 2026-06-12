@@ -60,9 +60,9 @@ typedef struct NodoToken {
 
 
 NodoToken* crearNodo(const char* lexema, TipoToken tipo, int linea, int columna);
-void agregarNodoALista(NodoToken** lista, const char* lexema, TipoToken tipo, int linea, int columna);
-void liberarLista(NodoToken* lista);
-void imprimirLista(NodoToken* lista);
+void agregarNodoALista(NodoToken** lista, const char* lexema, TipoToken tipo, TipoDeLista tipoLista, int linea, int columna);
+void liberarLista(NodoToken** lista);
+void imprimirLista(NodoToken* lista, TipoDeLista tipo);
 void darFormatoALista(NodoToken** lista, TipoDeLista tipo);
 
 #endif // TOKENS_H 
