@@ -41,13 +41,9 @@ void imprimirReporte(const char *mensaje, const char *lexema, TipoToken tipo, No
     } else if (DEBUG_MODE) {
         fprintf(stderr, COLOR_VERDE "[DEBUG] %s: %s: linea %d, columna %d" COLOR_RESET "\n", mensaje, lexema, linea, columna);
     } else {
-<<<<<<< HEAD
-        agregarNodoALista(lista, lexema, tipo, linea, columna);
-=======
         /*esto luego deberia ser la funcion de imprimir reporte que da todo el formato*/
         agregarNodoALista(lista, lexema, tipo, tipoLista, linea, columna);
         //fprintf(stdout, "%s: %s: linea %d, columna %d\n", mensaje, lexema, linea, columna);
->>>>>>> TP_2-Juan-Sequeira
     }
 }
 
