@@ -41,14 +41,18 @@ void imprimirReporte(const char *mensaje, const char *lexema, TipoToken tipo, No
     } else if (DEBUG_MODE) {
         fprintf(stderr, COLOR_VERDE "[DEBUG] %s: %s: linea %d, columna %d" COLOR_RESET "\n", mensaje, lexema, linea, columna);
     } else {
+<<<<<<< HEAD
         agregarNodoALista(lista, lexema, tipo, linea, columna);
+=======
+        /*esto luego deberia ser la funcion de imprimir reporte que da todo el formato*/
+        agregarNodoALista(lista, lexema, tipo, tipoLista, linea, columna);
+        //fprintf(stdout, "%s: %s: linea %d, columna %d\n", mensaje, lexema, linea, columna);
+>>>>>>> TP_2-Juan-Sequeira
     }
 }
 
 int tokens_reconocidos = 0;
 int tokens_no_reconocidos = 0;
-
-int largo = 0;
 
 %}
 
@@ -81,14 +85,14 @@ reservadaDeEnumeracion                       (enum)
 reservadaEtiqueta                            (case|default)
 reservadaSeleccion                           (if|else|switch)
 reservadaDeIteracion                         (do|while|for)
-reservadaSalto                               (goto|continue|break|return) 
+reservadaSalto                               (goto|continue|break|return)
 reservadaUnario                              (sizeof)
 identifier                                   {nondigit}({nondigit}|{digit})*
 noReconocido                                 [^ \t\n()\[\]{}.*+\-~!&?|/%<>#,:=;^"']+
 
 %%
 
-{decimal}                                    { imprimirReporte("Encontre una constante entera decimal", yytext, tokenDecimal, &listaConstantesDecimales, tipoListaConstantesDecimales, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
+{decimal}                                    { imprimirReporte("Constante entera decimal", yytext, tokenDecimal, &listaConstantesDecimales, tipoListaConstantesDecimales, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
 {octal}                                      { imprimirReporte("Constante entera octal", yytext, tokenOctal, &listaConstantesOctales, tipoListaConstantesOctales, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
 {hexadecimal}                                { imprimirReporte("Constante entera hexadecimal", yytext, tokenHexadecimal, &listaConstantesHexadecimales, tipoListaConstantesHexadecimales, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
 {real}                                       { imprimirReporte("Constante real", yytext, tokenReal, &listaConstantesReales, tipoListaConstantesReales, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
@@ -106,7 +110,7 @@ noReconocido                                 [^ \t\n()\[\]{}.*+\-~!&?|/%<>#,:=;^
 {reservadaDeIteracion}                       { imprimirReporte("Palabra Reservada (Iteracion)",yytext, tokenReservadaDeIteracion, &listaReservadaIteracion, tipoListaPalabrasReservadas, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
 {reservadaSalto}                             { imprimirReporte("Palabra reservada (Salto)", yytext, tokenReservadaSalto, &listaReservadaSalto, tipoListaPalabrasReservadas, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
 {reservadaUnario}                            { imprimirReporte("Palabra reservada (Unario)", yytext, tokenReservadaUnario, &listaReservadaUnario, tipoListaPalabrasReservadas, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
-{identifier}                                 { imprimirReporte("Identificador", yytext, tokenIdentifier, &listaIdentificadores, tipoListaIdentificadores, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }                                                 
+{identifier}                                 { imprimirReporte("Identificador", yytext, tokenIdentifier, &listaIdentificadores, tipoListaIdentificadores, linea_actual, columna_actual, 'A'); tokens_reconocidos++; columna_actual += yyleng; }
 {noReconocido}                               { imprimirReporte("Token no reconocido", yytext, tokenNoReconocido, &listaNoReconocidos, tipoListaNoReconocidos, linea_actual, columna_actual, 'E'); tokens_no_reconocidos++; columna_actual += yyleng; }
 {tabulacion}                                 { columna_actual += yyleng; }
 {saltoDeLinea}                               { linea_actual += yyleng; columna_actual = INICIO_CONTEO_COLUMNA; }
@@ -118,192 +122,192 @@ void imprimirListaFormateada () {
     if (listaIdentificadores == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaIdentificadores, tipoListaIdentificadores);
-        imprimirLista(listaIdentificadores);
-        liberarLista(listaIdentificadores);
+        darFormatoALista(&listaIdentificadores, tipoListaIdentificadores);
+        imprimirLista(listaIdentificadores, tipoListaIdentificadores);
+        liberarLista(&listaIdentificadores);
 
     }
-    
-    fprintf(stdout, "\n* Listado de literales cadena encontrados:\n");  
+
+    fprintf(stdout, "\n* Listado de literales cadena encontrados:\n");
     if (listaLiteralesCadena == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaLiteralesCadena, tipoListaLiteralesCadena);
-        imprimirLista(listaLiteralesCadena);
-        liberarLista(listaLiteralesCadena);
+        darFormatoALista(&listaLiteralesCadena, tipoListaLiteralesCadena);
+        imprimirLista(listaLiteralesCadena, tipoListaLiteralesCadena);
+        liberarLista(&listaLiteralesCadena);
 
     }
-    
-    fprintf(stdout, "\n* Listado de palabras reservadas (clase de almacenamiento):\n");  
+
+    fprintf(stdout, "\n* Listado de palabras reservadas (clase de almacenamiento):\n");
     if (listaReservadaAlmacenamiento == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaReservadaAlmacenamiento, tipoListaPalabrasReservadas);
-        imprimirLista(listaReservadaAlmacenamiento);
-        liberarLista(listaReservadaAlmacenamiento);
+        darFormatoALista(&listaReservadaAlmacenamiento, tipoListaPalabrasReservadas);
+        imprimirLista(listaReservadaAlmacenamiento, tipoListaPalabrasReservadas);
+        liberarLista(&listaReservadaAlmacenamiento);
 
     }
-    
-    fprintf(stdout, "\n* Listado de palabras reservadas (especificadores de tipo):\n");  
+
+    fprintf(stdout, "\n* Listado de palabras reservadas (especificadores de tipo):\n");
     if (listaReservadaTipo == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaReservadaTipo, tipoListaPalabrasReservadas);
-        imprimirLista(listaReservadaTipo);
-        liberarLista(listaReservadaTipo);
+        darFormatoALista(&listaReservadaTipo, tipoListaPalabrasReservadas);
+        imprimirLista(listaReservadaTipo, tipoListaPalabrasReservadas);
+        liberarLista(&listaReservadaTipo);
 
     }
-    
-    fprintf(stdout, "\n* Listado de palabras reservadas (calificadores de tipo):\n");  
+
+    fprintf(stdout, "\n* Listado de palabras reservadas (calificadores de tipo):\n");
     if (listaReservadaCalificadores == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaReservadaCalificadores, tipoListaPalabrasReservadas);
-        imprimirLista(listaReservadaCalificadores);
-        liberarLista(listaReservadaCalificadores);
+        darFormatoALista(&listaReservadaCalificadores, tipoListaPalabrasReservadas);
+        imprimirLista(listaReservadaCalificadores, tipoListaPalabrasReservadas);
+        liberarLista(&listaReservadaCalificadores);
 
     }
-    
-    fprintf(stdout, "\n* Listado de palabras reservadas (struct o union):\n");  
+
+    fprintf(stdout, "\n* Listado de palabras reservadas (struct o union):\n");
     if (listaReservadaStructUnion == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaReservadaStructUnion, tipoListaPalabrasReservadas);
-        imprimirLista(listaReservadaStructUnion);
-        liberarLista(listaReservadaStructUnion);
+        darFormatoALista(&listaReservadaStructUnion, tipoListaPalabrasReservadas);
+        imprimirLista(listaReservadaStructUnion, tipoListaPalabrasReservadas);
+        liberarLista(&listaReservadaStructUnion);
 
     }
-    
-    fprintf(stdout, "\n* Listado de palabras reservadas (enumeracion):\n");  
+
+    fprintf(stdout, "\n* Listado de palabras reservadas (enumeracion):\n");
     if (listaReservadaEnumeracion == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaReservadaEnumeracion, tipoListaPalabrasReservadas);
-        imprimirLista(listaReservadaEnumeracion);
-        liberarLista(listaReservadaEnumeracion);
+        darFormatoALista(&listaReservadaEnumeracion, tipoListaPalabrasReservadas);
+        imprimirLista(listaReservadaEnumeracion, tipoListaPalabrasReservadas);
+        liberarLista(&listaReservadaEnumeracion);
 
     }
-    
-    fprintf(stdout, "\n* Listado de palabras reservadas (etiqueta):\n");  
+
+    fprintf(stdout, "\n* Listado de palabras reservadas (etiqueta):\n");
     if (listaReservadaEtiqueta == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaReservadaEtiqueta, tipoListaPalabrasReservadas);
-        imprimirLista(listaReservadaEtiqueta);
-        liberarLista(listaReservadaEtiqueta);
+        darFormatoALista(&listaReservadaEtiqueta, tipoListaPalabrasReservadas);
+        imprimirLista(listaReservadaEtiqueta, tipoListaPalabrasReservadas);
+        liberarLista(&listaReservadaEtiqueta);
 
     }
-    
-    fprintf(stdout, "\n* Listado de palabras reservadas (seleccion):\n");  
+
+    fprintf(stdout, "\n* Listado de palabras reservadas (seleccion):\n");
     if (listaReservadaSeleccion == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaReservadaSeleccion, tipoListaPalabrasReservadas);
-        imprimirLista(listaReservadaSeleccion);
-        liberarLista(listaReservadaSeleccion);
+        darFormatoALista(&listaReservadaSeleccion, tipoListaPalabrasReservadas);
+        imprimirLista(listaReservadaSeleccion, tipoListaPalabrasReservadas);
+        liberarLista(&listaReservadaSeleccion);
 
     }
-    
-    fprintf(stdout, "\n* Listado de palabras reservadas (iteracion):\n");  
+
+    fprintf(stdout, "\n* Listado de palabras reservadas (iteracion):\n");
     if (listaReservadaIteracion == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaReservadaIteracion, tipoListaPalabrasReservadas);
-        imprimirLista(listaReservadaIteracion);
-        liberarLista(listaReservadaIteracion);
+        darFormatoALista(&listaReservadaIteracion, tipoListaPalabrasReservadas);
+        imprimirLista(listaReservadaIteracion, tipoListaPalabrasReservadas);
+        liberarLista(&listaReservadaIteracion);
 
     }
-    
-    fprintf(stdout, "\n* Listado de palabras reservadas (salto):\n");  
+
+    fprintf(stdout, "\n* Listado de palabras reservadas (salto):\n");
     if (listaReservadaSalto == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaReservadaSalto, tipoListaPalabrasReservadas);
-        imprimirLista(listaReservadaSalto);
-        liberarLista(listaReservadaSalto);
+        darFormatoALista(&listaReservadaSalto, tipoListaPalabrasReservadas);
+        imprimirLista(listaReservadaSalto, tipoListaPalabrasReservadas);
+        liberarLista(&listaReservadaSalto);
 
     }
-    
-    fprintf(stdout, "\n* Listado de palabras reservadas (unario):\n");  
+
+    fprintf(stdout, "\n* Listado de palabras reservadas (unario):\n");
     if (listaReservadaUnario == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaReservadaUnario, tipoListaPalabrasReservadas);
-        imprimirLista(listaReservadaUnario);
-        liberarLista(listaReservadaUnario);
+        darFormatoALista(&listaReservadaUnario, tipoListaPalabrasReservadas);
+        imprimirLista(listaReservadaUnario, tipoListaPalabrasReservadas);
+        liberarLista(&listaReservadaUnario);
 
     }
-    
-    fprintf(stdout, "\n* Listado de constantes enteras decimales:\n");  
+
+    fprintf(stdout, "\n* Listado de constantes enteras decimales:\n");
     if (listaConstantesDecimales == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaConstantesDecimales, tipoListaConstantesDecimales);
-        imprimirLista(listaConstantesDecimales);
-        liberarLista(listaConstantesDecimales);
+        darFormatoALista(&listaConstantesDecimales, tipoListaConstantesDecimales);
+        imprimirLista(listaConstantesDecimales, tipoListaConstantesDecimales);
+        liberarLista(&listaConstantesDecimales);
 
     }
-    
-    fprintf(stdout, "\n* Listado de constantes enteras hexadecimales:\n");  
+
+    fprintf(stdout, "\n* Listado de constantes enteras hexadecimales:\n");
     if (listaConstantesHexadecimales == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaConstantesHexadecimales, tipoListaConstantesHexadecimales);
-        imprimirLista(listaConstantesHexadecimales);
-        liberarLista(listaConstantesHexadecimales);
+        darFormatoALista(&listaConstantesHexadecimales, tipoListaConstantesHexadecimales);
+        imprimirLista(listaConstantesHexadecimales, tipoListaConstantesHexadecimales);
+        liberarLista(&listaConstantesHexadecimales);
 
     }
-    
-    fprintf(stdout, "\n* Listado de constantes enteras octales:\n");  
+
+    fprintf(stdout, "\n* Listado de constantes enteras octales:\n");
     if (listaConstantesOctales == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaConstantesOctales, tipoListaConstantesOctales);
-        imprimirLista(listaConstantesOctales);
-        liberarLista(listaConstantesOctales);
+        darFormatoALista(&listaConstantesOctales, tipoListaConstantesOctales);
+        imprimirLista(listaConstantesOctales, tipoListaConstantesOctales);
+        liberarLista(&listaConstantesOctales);
 
     }
-    
-    fprintf(stdout, "\n* Listado de constantes reales:\n");  
+
+    fprintf(stdout, "\n* Listado de constantes reales:\n");
     if (listaConstantesReales == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaConstantesReales, tipoListaConstantesReales);
-        imprimirLista(listaConstantesReales);
-        liberarLista(listaConstantesReales);
+        darFormatoALista(&listaConstantesReales, tipoListaConstantesReales);
+        imprimirLista(listaConstantesReales, tipoListaConstantesReales);
+        liberarLista(&listaConstantesReales);
 
     }
-    
-    fprintf(stdout, "\n* Listado de constantes caracter enumerados:\n");  
+
+    fprintf(stdout, "\n* Listado de constantes caracter enumerados:\n");
     if (listaConstantesCaracter == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaConstantesCaracter, tipoListaConstantesCaracter);
-        imprimirLista(listaConstantesCaracter);
-        liberarLista(listaConstantesCaracter);
+        darFormatoALista(&listaConstantesCaracter, tipoListaConstantesCaracter);
+        imprimirLista(listaConstantesCaracter, tipoListaConstantesCaracter);
+        liberarLista(&listaConstantesCaracter);
 
     }
-    
-    fprintf(stdout, "\n* Listado de operadores/caracteres de puntuación:\n");  
+
+    fprintf(stdout, "\n* Listado de operadores/caracteres de puntuación:\n");
     if (listaOperadoresYPuntuadores == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaOperadoresYPuntuadores, tipoListaOperadoresYPuntuadores);
-        imprimirLista(listaOperadoresYPuntuadores);
-        liberarLista(listaOperadoresYPuntuadores);
+        darFormatoALista(&listaOperadoresYPuntuadores, tipoListaOperadoresYPuntuadores);
+        imprimirLista(listaOperadoresYPuntuadores, tipoListaOperadoresYPuntuadores);
+        liberarLista(&listaOperadoresYPuntuadores);
 
     }
-    
-    fprintf(stdout, "\n* Listado de cadenas no reconocidas:\n");  
+
+    fprintf(stdout, "\n* Listado de cadenas no reconocidas:\n");
     if (listaNoReconocidos == NULL) {
         fprintf(stdout, "-\n");
     } else {
-        //darFormatoALista(&listaNoReconocidos, tipoListaNoReconocidos);
-        imprimirLista(listaNoReconocidos);
-        liberarLista(listaNoReconocidos);
-}
+        darFormatoALista(&listaNoReconocidos, tipoListaNoReconocidos);
+        imprimirLista(listaNoReconocidos, tipoListaNoReconocidos);
+        liberarLista(&listaNoReconocidos);
     }
-    
+}
+
 
 // argc cantidad de parametros, argv[] lista con contenido de los parametros
 int main(int argc, char *argv[]) {
@@ -311,26 +315,26 @@ int main(int argc, char *argv[]) {
     if (argc < 2) {
         fprintf(stderr, "Error: Parámetro obligatorio faltante.\n");
         fprintf(stderr, "Uso correcto: %s <ruta archivo entrada> DEBUG(?)\n", argv[0]);
-        return 1;  
+        return 1;
     } else if (argc > 3){
         fprintf(stderr, "Error: Demasiados parámetros.\n");
         fprintf(stderr, "Uso correcto: %s <ruta archivo entrada> DEBUG(?)\n", argv[0]);
         return 1;
     } else if (argc == 3 && strcmp(argv[2], "DEBUG") == 0) {
         DEBUG_MODE = true;
-    } 
- 
+    }
+
     FILE *archivo = fopen(argv[1], "r");
     if (!archivo) {
         fprintf(stderr, "Error crítico: No se pudo abrir el archivo '%s'\n", argv[1]);
         return 1;
     }
-    
-    yyin = archivo; 
 
-    yylex(); 
+    yyin = archivo;
 
-    fclose(yyin); 
+    yylex();
+
+    fclose(yyin);
 
     // Reporte final de tokens reconocidos y no reconocidos en modo DEBUG
     if (DEBUG_MODE) {
